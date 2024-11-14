@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryWrite</title>
+    <style>
+        /* 基本页面布局和导航栏样式 */
+        body, html {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        #navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #343a40;
+            padding: 10px 20px;
+            color: white;
+        }
+
+        #navbar a {
+            text-decoration: none;
+            color: white;
+            margin: 0 10px;
+            padding: 5px 10px;
+            border-radius: 3px;
+            transition: background-color 0.2s ease;
+        }
+
+        #navbar a:hover {
+            background-color: #495057;
+        }
+
+        /* 页面标题 */
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            font-weight: 300;
+            color: #333;
+        }
+
+        /* 页面布局 */
+        #content {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        #input-section, #feedback-section {
+            flex: 1;
+            padding: 20px;
+            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        #input-section {
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #story-input {
+            width: 100%;
+            height: 70%;
+            padding: 15px;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        #get-feedback, #save-story {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+        }
+
+        #get-feedback {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #get-feedback:hover {
+            background-color: #218838;
+        }
+
+        #save-story {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #save-story:hover {
+            background-color: #0056b3;
+        }
+
+        #feedback-section {
+            background-color: #fff;
+            overflow-y: auto;
+            border-left: 1px solid #ddd;
+        }
+
+        #feedback {
+            white-space: pre-wrap;
+            font-size: 16px;
+            color: #333;
+        }
+
+        /* 响应式布局 */
+        @media (max-width: 768px) {
+            #content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <div>
+            <a href="/index_login">Home</a>
+            <a href="/profile">Profile</a>
+            <a href="/storygenerate">Chatbot1: Story Generator</a>
+        </div>
+        <div>
+            <a href="/logout">Log out</a>
+        </div>
+    </div>
+
+    <h1>Write Your Story and Get Feedback</h1>
+
+    <!-- Content Section -->
+    <div id="content">
+        <!-- Input Section -->
+        <div id="input-section">
+            <textarea id="story-input" placeholder="Type your story here..."></textarea>
+            <div class="button-group">
+                <button id="save-story">Save</button>
+                <button id="get-feedback">Get Feedback</button>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div id="feedback-section">
+            <h2>Feedback</h2>
+            <div id="feedback">Your feedback will appear here.</div>
+        </div>
+    </div>
+
+    <!-- <script>
+        document.getElementById("get-feedback").addEventListener("click", function() {
+            const story = document.getElementById("story-input").value;
+            getFeedback(story);
+        });
+
+        document.getElementById("save-story").addEventListener("click", function() {
+            const story = document.getElementById("story-input").value;
+            saveStory(story);
+        });
+
+        function saveStory(story) {
+            const profileData = JSON.parse(localStorage.getItem("profileData")) || { stories: [] };
+            profileData.stories.push(story);
+            localStorage.setItem("profileData", JSON.stringify(profileData));
+            alert("Story saved!");
+        }
+
+        async function getFeedback(story) {
+            const apiUrl = 'https://api.dify.ai/v1/workflows/run';
+            const feedbackElement = document.getElementById("feedback");
+            const apiKey = 'app-e0EuM9KBBHGEV9QLrfjzJFok'; // 请将 'your_api_key' 替换为实际的 API Key
+
+            feedbackElement.innerText = "Fetching feedback...";
+
+            try {
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer app-e0EuM9KBBHGEV9QLrfjzJFok`,
+                    "Content-Type": "application/json"
+                },
+                data: JSON.stringify({
+                    inputs: { "stories": story },  // 根据API需求确认字段命名
+                    response_mode: "blocking",
+                    user: "abc-123"  // 可以使用用户的唯一 ID
+        })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            const finalresult=result.get("data", {}).get("outputs", {}).get("output", "No output available.");
+            const feedbackText = finalresult;
+            feedbackElement.innerText = feedbackText;
+            // }
+            // } catch (error) {
+            //     feedbackElement.innerText = "Error fetching feedback.";
+            //     console.error("Error:", error);
+            // }
+        }
+    </script> -->
+    <script>
+        document.getElementById("get-feedback").addEventListener("click", function() {
+            const story = document.getElementById("story-input").value;
+            getFeedback(story);
+        });
+    
+        async function getFeedback(story) {
+            const feedbackElement = document.getElementById("feedback");
+            feedbackElement.innerText = "Fetching feedback...You might need to wait for several seconds.";
+    
+            try {
+                const response = await fetch('/storywrite', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ story: story })
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Error fetching feedback');
+                }
+    
+                const result = await response.json();
+                feedbackElement.innerText = result.feedback || "No feedback available.";
+            } catch (error) {
+                feedbackElement.innerText = "Error.";
+                console.error("Error:", error);
+            }
+        }
+    </script>    
+</body>
+</html>

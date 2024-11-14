@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f4f5f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        #navbar {
+            background-color: #343a40;
+            overflow: hidden;
+        }
+
+        #navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        #navbar a:hover {
+            color: #ddd;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 40px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" id="navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Home</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Log in</h1>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-danger">
+        {{ messages[0] }}
+    </div>
+    {% endif %}
+    {% endwith %}
+    <form action="/login" method="post">
+        <div class="mb-3">
+            <label for="username" class="form-label">username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+            <label class="form-check-label" for="remember">remember me</label>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+    </form>
+    <p class="text-center mt-4"> Don't have an account? <a href="/signup">Click here to sign up</a></p>
+</div>
+
+</body>
+</html>

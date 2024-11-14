@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        #navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #343a40;
+            padding: 10px 20px;
+            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #navbar a {
+            text-decoration: none;
+            color: white;
+            margin: 0 10px;
+            padding: 5px 10px;
+            border-radius: 3px;
+            transition: background-color 0.2s ease;
+        }
+
+        #navbar a:hover {
+            background-color: #495057;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            font-weight: lighter;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation bar -->
+    <div id="navbar">
+        <div>
+            <a href="/index_login">Home</a>
+            <a href="/storygenerate">Chatbot1:story generator</a>
+            <a href="/storywrite">Chatbot1:story writer</a>
+        </div>
+        <div>
+            <a href="/logout">Log out</a>
+        </div>
+    </div>
+
+    <h2>My Profile</h2>
+    <label>Username: <input type="text" id="username" disabled></label>
+    <label>Gender:
+        <select id="gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+    </label>
+    <label>Age: <input type="number" id="age"></label>
+
+    <h3>Your Stories</h3>
+    <div id="storiesList"></div>
+    <button onclick="saveProfile()">Save Profile</button>
+
+    <script>
+        // Load profile data from the server
+        function loadProfile() {
+            fetch('/load_profile')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("username").value = data.username;
+                    document.getElementById("gender").value = data.gender || "Male";
+                    document.getElementById("age").value = data.age || "";
+                    const storiesList = document.getElementById("storiesList");
+                    storiesList.innerHTML = data.stories.map(story => 
+                        `<p contenteditable="true" data-id="${story.id}">${story.content}</p>`
+                    ).join("");
+                });
+        }
+
+        // Save profile data back to the server
+        function saveProfile() {
+            const profileData = {
+                gender: document.getElementById("gender").value,
+                age: document.getElementById("age").value,
+                stories: Array.from(document.querySelectorAll("#storiesList p")).map(storyEl => ({
+                    id: storyEl.dataset.id,
+                    content: storyEl.innerText
+                }))
+            };
+
+            fetch('/save_profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(profileData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Profile saved!");
+                } else {
+                    alert("Error saving profile.");
+                }
+            });
+        }
+
+        // Load profile data when the page loads
+        window.onload = loadProfile;
+    </script>
+
+</body>
+
+</html>
