@@ -2,7 +2,7 @@ A web platform for integrating Dify chatbots, including registration and login f
 Run with python3.9
 use conda to create a new environment:        
 ```
-conda create --name myenv python=3.7    
+conda create --name myenv python=3.9
 conda activate myenv    
 pip install -r requirements2.txt     
 ```
