@@ -1,6 +1,6 @@
-A web platform for integrating Dify chatbots, including registration and login features. 
-Run with python3.9
-use conda to create a new environment:        
+A web platform for integrating Dify chatbots, including registration and login features.      
+Run with python3.9        
+use conda to create a new environment:             
 ```
 conda create --name myenv python=3.9
 conda activate myenv    
