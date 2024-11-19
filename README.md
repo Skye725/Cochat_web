@@ -19,5 +19,5 @@ pip install -r requirements2.txt
 - chatbot writer input length limitation
 
   You can try using the following link:
- [ https://cochat-story.replit.app/](https://cochatweb-SkyeW4.replit.app
+ [ https://cochatweb-SkyeW4.replit.app](https://cochatweb-SkyeW4.replit.app
 )
