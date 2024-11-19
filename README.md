@@ -16,6 +16,7 @@ pip install -r requirements2.txt
 - Automatic story store in Chatbot1: generator
 - add story titles  
 - Interface enhancement
+- chatbot writer input length limitation
 
   You can try using the following link:
   https://cochat-story.replit.app/
