@@ -331,7 +331,7 @@ def get_dify_parameters():
     parameters_url = "https://api.dify.ai/v1/parameters"
     
     headers = {
-        "Authorization": "Bearer app-WVgNgveR7XF97VoTd0TojFUk"
+        "Authorization": "Bearer xxxxxxxxxxxxxxxxxxxxxxxxx"
     }
     
     try:
@@ -353,7 +353,7 @@ def dify_chatbot_request(prompt):
     dify_api_url = "https://api.dify.ai/v1/chat-messages"
     
     headers = {
-        "Authorization": "Bearer app-WVgNgveR7XF97VoTd0TojFUk",
+        "Authorization": "Bearer xxxxxxxxxxxxx",
         "Content-Type": "application/json"
     }
     user = User.query.get(current_user.id)
@@ -444,7 +444,7 @@ def story_write():
 
         # 调用 Dify API 获取反馈
         headers = {
-            "Authorization": "Bearer app-e0EuM9KBBHGEV9QLrfjzJFok",
+            "Authorization": "Bearer xxxxxxxxxx",
             "Content-Type": "application/json"
         }
         data = {
