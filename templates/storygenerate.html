@@ -3,102 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot Story Generator</title>
+    <title>AI Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 全局样式 */
-        body, html {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #f5f5f5;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .message-container {
+            height: calc(100vh - 220px);
         }
-        /* 导航栏样式 */
-        #navbar {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 1200px;
-            background-color: #343a40;
-            padding: 10px 20px;
-            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+        .typing-indicator::after {
+            content: '...';
+            animation: typing 1s infinite;
         }
-        #navbar a {
-            text-decoration: none;
-            color: white;
-            margin: 0 10px;
-            padding: 5px 10px;
-            border-radius: 3px;
-            transition: background-color 0.2s ease;
-        }
-        #navbar a:hover {
-            background-color: #495057;
-        }
-        /* 页面标题样式 */
-        h1 {
-            text-align: center;
-            margin-top: 30px;
-            font-weight: lighter;
-            color: #333;
-        }
-        /* 聊天机器人容器样式 */
-        .chatbot-container {
-            width: 100%;
-            max-width: 800px;
-            height: calc(100vh - 200px);
-            min-height: 600px;
-            margin: 20px auto;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-            background-color: white;
-        }
-        /* iFrame 样式 */
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+        @keyframes typing {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
         }
     </style>
 </head>
-
-<body>
-    <!-- 导航栏 -->
-    <div id="navbar">
-        <div>
-            <a href="/index_login">Home</a>
-            <a href="/profile">Profile</a>
-            <a href="/storywrite">Chatbot1: Story Writer</a>
+<body class="bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-800 text-white">
+        <div class="container mx-auto max-w-4xl px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex space-x-4">
+                    <a href="/index_login" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Home</a>
+                    <a href="/profile" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Profile</a>
+                    <a href="/freewrite" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Write your story freely</a>
+                    <a href="/storywrite" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Write and get feedback</a>
+                </div>
+                <div>
+                    <a href="/logout" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Log out</a>
+                </div>
+            </div>
         </div>
-        <div>
-            <a href="/logout">Log out</a>
+    </nav>
+
+    <div class="container mx-auto max-w-4xl px-4 mt-4">
+        <div class="bg-white rounded-lg shadow-lg h-[calc(100vh-140px)] flex flex-col">
+            <!-- Header -->
+            <div class="p-4 border-b flex items-center space-x-4">
+                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold">Story Assistant</h2>
+                    <p class="text-sm text-gray-500">Always here to help, tell me about what you want to write and I will generate stories for you</p>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="flex-1 overflow-y-auto p-4 message-container" id="messageContainer">
+                <div class="space-y-4">
+                    <!-- AI Welcome Message -->
+                    <div class="flex items-start space-x-4">
+                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                            </svg>
+                        </div>
+                        <div class="bg-gray-100 rounded-lg p-4 max-w-[80%]">
+                            <p>Hello! How can I assist you today?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-4 border-t">
+                <form id="chatForm" class="flex space-x-4">
+                    <input type="text" id="userInput" class="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:border-blue-500" placeholder="Type your message...">
+                    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                        Send
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
-    <h1>Chat with the Bot to Generate Your Story</h1>
-    
-    <!-- 聊天机器人容器 -->
-    <div class="chatbot-container">
-        <script>
-            window.difyChatbotConfig = {
-                inputs: {
-                    "username": "{{ username }}",  // Passed from Flask
-                    "gender": "{{ gender }}",      // Passed from Flask
-                    "age": "{{ age }}"             // Passed from Flask
-                },
-                // Add other configuration options here if needed
-            };
-        </script>
-        <iframe
-            id="chatbot-iframe"
-            src="https://udify.app/chatbot/3fInpHFkWNNtTkD2"
-            allow="microphone">
-        </iframe>
-    </div>
+    <script>
+        const messageContainer = document.getElementById('messageContainer');
+        const chatForm = document.getElementById('chatForm');
+        const userInput = document.getElementById('userInput');
+
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start space-x-4 ' + (isUser ? 'justify-end' : '');
+            
+            const iconAndMessage = `
+                ${isUser ? '' : `
+                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                        </svg>
+                    </div>
+                `}
+                <div class="${isUser ? 'bg-blue-500 text-white' : 'bg-gray-100'} rounded-lg p-4 max-w-[80%]">
+                    <p>${content}</p>
+                </div>
+            `;
+            
+            messageDiv.innerHTML = iconAndMessage;
+            messageContainer.querySelector('.space-y-4').appendChild(messageDiv);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const indicatorDiv = document.createElement('div');
+            indicatorDiv.className = 'flex items-start space-x-4 typing-indicator';
+            indicatorDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                    </svg>
+                </div>
+                <div class="bg-gray-100 rounded-lg p-4 max-w-[80%]">
+                    <p>Typing...</p>
+                </div>
+            `;
+            messageContainer.querySelector('.space-y-4').appendChild(indicatorDiv);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+            return indicatorDiv;
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // 添加用户消息
+            addMessage(message, true);
+            userInput.value = '';
+
+            // 添加输入指示器
+            const typingIndicator = addTypingIndicator();
+
+            try {
+                // 发送消息到后端
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                
+                // 移除输入指示器
+                typingIndicator.remove();
+                
+                // 添加 AI 回复
+                // 从返回的数据中提取回复文本
+                const aiResponse = data.fulfillment_response.messages[0].text.text[0];
+                addMessage(aiResponse);
+
+            } catch (error) {
+                console.error('Error:', error);
+                typingIndicator.remove();
+                addMessage('sorry, something went wrong');
+            }
+        });
+    </script>
 </body>
 </html>

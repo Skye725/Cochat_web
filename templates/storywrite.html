@@ -135,7 +135,8 @@
         <div>
             <a href="/index_login">Home</a>
             <a href="/profile">Profile</a>
-            <a href="/storygenerate">Chatbot1: Story Generator</a>
+            <a href="/freewrite">Write your story freely</a>
+            <a href="/storygenerate">Generate your story</a>
         </div>
         <div>
             <a href="/logout">Log out</a>
@@ -220,6 +221,39 @@
         document.getElementById("get-feedback").addEventListener("click", function() {
             const story = document.getElementById("story-input").value;
             getFeedback(story);
+        });
+    
+        document.getElementById("save-story").addEventListener("click", async function() {
+            const story = document.getElementById("story-input").value;
+            if (!story) {
+                alert("Please write your story before saving.");
+                return;
+            }
+            
+            try {
+                const response = await fetch('/save_story', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: 'Story ' + new Date().toLocaleString(), // 使用时间作为默认标题
+                        content: story
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert("Story saved successfully!");
+                    // 可选：清空输入框
+                    // document.getElementById("story-input").value = '';
+                } else {
+                    alert(result.error || "Failed to save story.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred while saving the story.");
+            }
         });
     
         async function getFeedback(story) {

@@ -33,7 +33,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # print(build_info.cuda_version_number)
 DIFY_API_URL = 'https://api.dify.ai/v1/workflows/run'
 
-
+# 在文件开头添加全局变量字典，用于存储每个用户的会话ID
+user_conversations = {}
 
 app = Flask(__name__)
 CORS(app)
@@ -151,6 +152,11 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    # 清除用户的会话ID
+    user_id = str(current_user.id)
+    if user_id in user_conversations:
+        del user_conversations[user_id]
+    
     session.pop('user_id', None)
     logout_user()
     return redirect(url_for('login'))
@@ -205,16 +211,46 @@ def pre_img():
     return render_template('profile.html', user_id=session.get('user_id'))
 
 #个人主页信息加载
+# @app.route('/load_profile', methods=['GET'])
+# @login_required
+# def load_profile():
+#     user = User.query.get(current_user.id)
+
+#     if user:
+#         # 获取用户的所有故事并转换为字典格式
+#         stories = Story.query.filter_by(user_id=user.id).all()
+#         stories_data = [{
+#             "id": story.id,
+#             "title": story.title,
+#             "content": story.content,
+#             "time": story.time.isoformat() if story.time else None
+#         } for story in stories]
+        
+#         profile_data = {
+#             "username": user.username,
+#             "gender": user.gender,
+#             "age": user.age,
+#             "stories": stories_data
+#         }
+#         return jsonify(profile_data)
+#     return jsonify({"error": "User not found"}), 404
 @app.route('/load_profile', methods=['GET'])
 @login_required
 def load_profile():
-    # Get the current user from the session
     user = User.query.get(current_user.id)
-
     if user:
-        # Retrieve user's profile data and their stories
+        # 获取用户的所有故事
         stories = Story.query.filter_by(user_id=user.id).all()
-        stories_data = [{"id": story.id, "content": story.content} for story in stories]
+        stories_data = []
+        
+        for story in stories:
+            story_dict = {
+                "id": story.id,
+                "title": story.title,
+                "content": story.content,
+                "time": story.time.isoformat() if story.time else None
+            }
+            stories_data.append(story_dict)
         
         profile_data = {
             "username": user.username,
@@ -251,10 +287,35 @@ def save_profile():
 
 
 
-# @app.route('/storygenerate', methods=['GET', 'POST'])
-# @login_required
-# def pre_webcam():
-#     return render_template('storygenerate.html', user_id=session.get('user_id'))
+@app.route('/freewrite', methods=['GET', 'POST'])
+@login_required
+def free_write():
+    return render_template('freewrite.html', user_id=session.get('user_id'))
+
+@app.route('/save_story', methods=['POST'])
+@login_required
+def save_story():
+    try:
+        data = request.get_json()
+        title = data.get('title')
+        content = data.get('content')
+
+        if not title or not content:
+            return jsonify({'error': 'Title and content cannot be empty'}), 400
+
+        new_story = Story(
+            title=title,
+            content=content,
+            user_id=current_user.id
+        )
+        
+        db.session.add(new_story)
+        db.session.commit()
+
+        return jsonify({'success': True, 'message': 'Story saved successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 
 # chatbot1
@@ -265,8 +326,107 @@ def story_generate():
     user = User.query.get(current_user.id)
     return render_template('storygenerate.html', username=user.username, gender=user.gender, age=user.age)
 
+#获取参数
+def get_dify_parameters():
+    parameters_url = "https://api.dify.ai/v1/parameters"
+    
+    headers = {
+        "Authorization": "Bearer app-WVgNgveR7XF97VoTd0TojFUk"
+    }
+    
+    try:
+        response = requests.get(parameters_url, headers=headers)
+        response.raise_for_status()  # 如果请求失败会抛出异常
+        return response.json()
+    except Exception as e:
+        app.logger.error(f"Error getting parameters: {str(e)}")
+        return None
 
 
+
+
+
+
+
+#dify聊天调用
+def dify_chatbot_request(prompt):
+    dify_api_url = "https://api.dify.ai/v1/chat-messages"
+    
+    headers = {
+        "Authorization": "Bearer app-WVgNgveR7XF97VoTd0TojFUk",
+        "Content-Type": "application/json"
+    }
+    user = User.query.get(current_user.id)
+    
+    # 获取当前用户的 conversation_id
+    current_conversation_id = user_conversations.get(str(user.id), "")
+
+    #打印参数
+    parameters = get_dify_parameters()
+    if parameters:
+        print("Dify Parameters:", parameters)
+
+
+    data = {
+        "inputs": {"username": user.username, "gender": str(user.gender), "age": str(user.age)},
+        "query": prompt,
+        "response_mode": "blocking",
+        "conversation_id": current_conversation_id,
+        "user": str(user.id)
+    }
+    
+    response = requests.post(dify_api_url, headers=headers, data=json.dumps(data))
+    response_json = response.json()
+    print(response_json)
+    
+    # 如果是新对话，保存 conversation_id
+    if not current_conversation_id and 'conversation_id' in response_json:
+        user_conversations[str(user.id)] = response_json['conversation_id']
+    
+    return response_json
+
+# 添加聊天路由
+@app.route('/chat', methods=['POST'])
+@login_required
+def chat():
+    try:
+        message = request.json.get('message')
+        if not message:
+            return jsonify({'error': 'Message is required'}), 400
+
+        # 调用 Dify API
+        dify_response = dify_chatbot_request(message)
+        response_text = dify_response.get('answer', 'sorry, I cannot answer this question now.')
+        #输出
+        print("Chat Response:", dify_response)# 构建回复
+        
+        response = {
+            "fulfillment_response": {
+                "messages": [{"text": {"text": [response_text]}}]
+            }
+        }
+
+        return jsonify(response)
+
+    except Exception as e:
+        app.logger.error(f"Chat error: {str(e)}")
+        return jsonify({
+            "fulfillment_response": {
+                "messages": [{"text": {"text": ["sorry, something went wrong"]}}]
+            }
+        }), 500
+
+# 添加清除会话的路由
+@app.route('/clear_chat', methods=['POST'])
+@login_required
+def clear_chat():
+    try:
+        user_id = str(current_user.id)
+        if user_id in user_conversations:
+            del user_conversations[user_id]
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # #chatbot2
 # @app.route('/storywrite', methods=['GET', 'POST'])
@@ -284,7 +444,7 @@ def story_write():
 
         # 调用 Dify API 获取反馈
         headers = {
-            "Authorization": "Bearer XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            "Authorization": "Bearer app-e0EuM9KBBHGEV9QLrfjzJFok",
             "Content-Type": "application/json"
         }
         data = {

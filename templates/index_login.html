@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Record Your Story</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --nav-height: 70px;
+            --transition: all 0.3s ease;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
-            color: #333;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         #navbar {
@@ -18,7 +30,18 @@
             align-items: center;
             background-color: #343a40;
             padding: 10px 20px;
-            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+            color: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
         }
 
         #navbar a {
@@ -28,35 +51,113 @@
             padding: 5px 10px;
             border-radius: 3px;
             transition: background-color 0.2s ease;
+            font-weight: 500;
         }
 
         #navbar a:hover {
             background-color: #495057;
+            transform: translateY(-2px);
         }
 
-        h1 {
+        #navbar a::after {
+            display: none;
+        }
+
+        .main-content {
+            margin-top: var(--nav-height);
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .welcome-message {
             text-align: center;
-            margin-top: 50px;
-            font-weight: lighter;
-            color: #333;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp 0.8s ease-out forwards;
         }
 
+        .welcome-message h1 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .welcome-message p {
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                gap: 0.8rem;
+            }
+
+            #navbar a {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .welcome-message {
+                padding: 1.5rem;
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- navi -->
-    <div id="navbar">
-        <div>
-            <a href="/profile">Your profile</a>
-            <a href="/storygenerate">Chatbot1:story generator</a>
-            <a href="/storywrite">Chatbot2:story writer</a>
+    <nav id="navbar">
+        <div class="nav-links">
+            <a href="/profile">Your Profile</a>
+            <a href="/freewrite">Free Writing</a>
+            <a href="/storygenerate">Story Generator</a>
+            <a href="/storywrite">Writing Assistant</a>
         </div>
-        <div>
-            <a href="/logout">Log out</a>
+        <div class="nav-links">
+            <a href="/logout">Log Out</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="welcome-message">
+            <h1>Welcome to Your Story Space</h1>
+            <p>Everyone carries unique stories within them—stories that shape who we are and connect us with others.</p>
+            <p>Today, we invite you to share your story in a safe and open environment. Whether it's a memorable experience, a journey of growth, or a meaningful moment, any of these can be the starting point of your narrative.</p>
+            <p>Sharing isn't just about expression; it's an opportunity for self-healing and connecting with those who listen. Let's listen, understand, and appreciate the power in each word you share.</p>
+            <p>Take your time, feel free to speak from the heart—this is your story.</p>
         </div>
     </div>
-    <h1>Everyone carries unique stories within them—stories that shape who we are and connect us with others. Today, we invite you to share your story in a safe and open environment. Whether it’s a memorable experience, a journey of growth, or a meaningful moment, any of these can be the starting point of your narrative. Sharing isn’t just about expression; it’s an opportunity for self-healing and connecting with those who listen. Let’s listen, understand, and appreciate the power in each word you share. Take your time, feel free to speak from the heart—this is your story.</h1>
 </body>
-
 </html>
