@@ -11,11 +11,13 @@ pip install -r requirements2.txt
 **Chatbot2:** Provides feedback on user-written stories.
 
 **Features to be added:**  
-- Story input box for typing stories  
-- Story storage displayed on profile  
+- Story card displayed on profile  
 - Story tag categorization  
-- Automatic parameter passing to Chatbot1  
+- Automatic story store in Chatbot1: generator
+- add story titles  
 - Interface enhancement
+- chatbot writer input length limitation
 
   You can try using the following link:
-  https://cochat-story.replit.app/
+ [ https://cochatweb-SkyeW4.replit.app](https://cochatweb-SkyeW4.replit.app
+)
