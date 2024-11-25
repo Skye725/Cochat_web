@@ -26,6 +26,7 @@
         }
 
         #navbar a {
+            position: relative;
             text-decoration: none;
             color: white;
             margin: 0 10px;
@@ -36,6 +37,23 @@
 
         #navbar a:hover {
             background-color: #495057;
+        }
+
+        /* 添加导航栏活动状态样式 */
+        #navbar a.active {
+            background-color: #495057;
+            position: relative;
+        }
+
+        #navbar a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background-color: #007bff;
         }
 
         /* 页面标题 */
@@ -135,8 +153,9 @@
         <div>
             <a href="/index_login">Home</a>
             <a href="/profile">Profile</a>
-            <a href="/freewrite">Write your story freely</a>
-            <a href="/storygenerate">Generate your story</a>
+            <a href="/freewrite">Manual Writing</a>
+            <a href="/storygenerate">Automated Writing</a>
+            <a href="/storywrite" class="active">Guided Writing</a>
         </div>
         <div>
             <a href="/logout">Log out</a>
@@ -221,39 +240,6 @@
         document.getElementById("get-feedback").addEventListener("click", function() {
             const story = document.getElementById("story-input").value;
             getFeedback(story);
-        });
-    
-        document.getElementById("save-story").addEventListener("click", async function() {
-            const story = document.getElementById("story-input").value;
-            if (!story) {
-                alert("Please write your story before saving.");
-                return;
-            }
-            
-            try {
-                const response = await fetch('/save_story', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        title: 'Story ' + new Date().toLocaleString(), // 使用时间作为默认标题
-                        content: story
-                    })
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                    alert("Story saved successfully!");
-                    // 可选：清空输入框
-                    // document.getElementById("story-input").value = '';
-                } else {
-                    alert(result.error || "Failed to save story.");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("An error occurred while saving the story.");
-            }
         });
     
         async function getFeedback(story) {

@@ -18,6 +18,20 @@
             33% { content: '..'; }
             66% { content: '...'; }
         }
+        .nav-active {
+            background-color: rgb(55, 65, 81);
+            position: relative;
+        }
+        .nav-active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background-color: rgb(59, 130, 246);
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -27,9 +41,10 @@
             <div class="flex justify-between items-center">
                 <div class="flex space-x-4">
                     <a href="/index_login" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Home</a>
-                    <a href="/profile" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Profile</a>
-                    <a href="/freewrite" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Write your story freely</a>
-                    <a href="/storywrite" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Write and get feedback</a>
+                    <a href="/profile" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Your Profile</a>
+                    <a href="/freewrite" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Manual Writing</a>
+                    <a href="/storygenerate" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors nav-active">Automated Writing</a>
+                    <a href="/storywrite" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Guided Writing</a>
                 </div>
                 <div>
                     <a href="/logout" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Log out</a>
@@ -42,10 +57,8 @@
         <div class="bg-white rounded-lg shadow-lg h-[calc(100vh-140px)] flex flex-col">
             <!-- Header -->
             <div class="p-4 border-b flex items-center space-x-4">
-                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-                    </svg>
+                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden">
+                    <img src="{{ url_for('static', filename='icon.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
                 </div>
                 <div>
                     <h2 class="text-xl font-bold">Story Assistant</h2>
@@ -58,13 +71,11 @@
                 <div class="space-y-4">
                     <!-- AI Welcome Message -->
                     <div class="flex items-start space-x-4">
-                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-                            </svg>
+                        <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            <img src="{{ url_for('static', filename='icon.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
                         </div>
                         <div class="bg-gray-100 rounded-lg p-4 max-w-[80%]">
-                            <p>Hello! How can I assist you today?</p>
+                            <p>Hello, {{username}}! I am here to listen to your story and give mental support. Here, we will have a relaxed conversation and collect your basic information. I will ask you one question at a time until I have all the information I want to know. Afterwards, I will encourage you to share your story and help you revise it to make it more authentic and encouraging. Please feel free to relax and start our communication! What story you would like to share today?</p>
                         </div>
                     </div>
                 </div>
@@ -91,16 +102,37 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = 'flex items-start space-x-4 ' + (isUser ? 'justify-end' : '');
             
+            // 检查是否包含特定文本
+            const isStory = !isUser && content.includes("I summarized the previous chat between us and generated a story");
+            
             const iconAndMessage = `
                 ${isUser ? '' : `
-                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-                        </svg>
+                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        <img src="{{ url_for('static', filename='icon.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
                     </div>
                 `}
                 <div class="${isUser ? 'bg-blue-500 text-white' : 'bg-gray-100'} rounded-lg p-4 max-w-[80%]">
-                    <p>${content}</p>
+                    ${isStory ? `
+                        <div class="story-card">
+                            <button onclick="toggleStoryEdit(this)" class="mb-2 text-blue-500 hover:text-blue-700">
+                                Click to Edit Story
+                            </button>
+                            <div class="story-content hidden">
+                                <textarea class="w-full p-2 border rounded mb-2 min-h-[200px]">${content}</textarea>
+                                <button onclick="saveStory(this)" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                                    Save Story
+                                </button>
+                            </div>
+                            <p class="story-text">${content}</p>
+                        </div>
+                    ` : `<p>${content}</p>`}
+                    ${!isUser && !isStory ? `
+                        <div class="mt-2 flex justify-end">
+                            <button onclick="startGenerating()" class="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">
+                                Generate Story
+                            </button>
+                        </div>
+                    ` : ''}
                 </div>
             `;
             
@@ -169,6 +201,102 @@
                 addMessage('sorry, something went wrong');
             }
         });
+
+        // 添加开始生成故事的函数
+        async function startGenerating() {
+            const message = "Start generating the story";
+            
+            // 添加用户消息
+            addMessage(message, true);
+
+            // 添加输入指示器
+            const typingIndicator = addTypingIndicator();
+
+            try {
+                // 发送消息到后端
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                
+                // 移除输入指示器
+                typingIndicator.remove();
+                
+                // 添加 AI 回复
+                const aiResponse = data.fulfillment_response.messages[0].text.text[0];
+                addMessage(aiResponse);
+
+            } catch (error) {
+                console.error('Error:', error);
+                typingIndicator.remove();
+                addMessage('sorry, something went wrong');
+            }
+        }
+
+        // 切换故事编辑状态
+        function toggleStoryEdit(button) {
+            const storyCard = button.closest('.story-card');
+            const storyContent = storyCard.querySelector('.story-content');
+            const storyText = storyCard.querySelector('.story-text');
+            
+            if (storyContent.classList.contains('hidden')) {
+                storyContent.classList.remove('hidden');
+                storyText.classList.add('hidden');
+                button.textContent = 'Hide Editor';
+            } else {
+                storyContent.classList.add('hidden');
+                storyText.classList.remove('hidden');
+                button.textContent = 'Click to Edit Story';
+            }
+        }
+
+        // 保存故事到数据库
+        async function saveStory(button) {
+            const storyCard = button.closest('.story-card');
+            const textarea = storyCard.querySelector('textarea');
+            const content = textarea.value;
+
+            try {
+                const response = await fetch('/save_story', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: 'Generated Story',  // 可以根据需要修改标题
+                        content: content
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save story');
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Story saved successfully!');
+                    // 更新显示的文本
+                    const storyText = storyCard.querySelector('.story-text');
+                    storyText.textContent = content;
+                    // 隐藏编辑器
+                    toggleStoryEdit(storyCard.querySelector('button'));
+                } else {
+                    throw new Error(data.error || 'Failed to save story');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to save story: ' + error.message);
+            }
+        }
     </script>
 </body>
 </html>

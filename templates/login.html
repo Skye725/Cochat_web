@@ -57,12 +57,28 @@
 
 <div class="container">
     <h1>Log in</h1>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div class="alert alert-danger">
-        {{ messages[0] }}
-    </div>
-    {% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="{{ category }}-message" style="
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 4px;
+                    text-align: center;
+                    {% if category == 'success' %}
+                        background-color: #d4edda;
+                        color: #155724;
+                        border: 1px solid #c3e6cb;
+                    {% elif category == 'error' %}
+                        background-color: #f8d7da;
+                        color: #721c24;
+                        border: 1px solid #f5c6cb;
+                    {% endif %}
+                ">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
     {% endwith %}
     <form action="/login" method="post">
         <div class="mb-3">

@@ -327,20 +327,20 @@ def story_generate():
     return render_template('storygenerate.html', username=user.username, gender=user.gender, age=user.age)
 
 #获取参数
-def get_dify_parameters():
-    parameters_url = "https://api.dify.ai/v1/parameters"
+# def get_dify_parameters():
+#     parameters_url = "https://api.dify.ai/v1/parameters"
     
-    headers = {
-        "Authorization": "Bearer xxxxxxxxxxxxxxxxxxxxxxxxx"
-    }
+#     headers = {
+#         "Authorization": "Bearer xxxxxxxx"
+#     }
     
-    try:
-        response = requests.get(parameters_url, headers=headers)
-        response.raise_for_status()  # 如果请求失败会抛出异常
-        return response.json()
-    except Exception as e:
-        app.logger.error(f"Error getting parameters: {str(e)}")
-        return None
+#     try:
+#         response = requests.get(parameters_url, headers=headers)
+#         response.raise_for_status()  # 如果请求失败会抛出异常
+#         return response.json()
+#     except Exception as e:
+#         app.logger.error(f"Error getting parameters: {str(e)}")
+#         return None
 
 
 
@@ -353,7 +353,7 @@ def dify_chatbot_request(prompt):
     dify_api_url = "https://api.dify.ai/v1/chat-messages"
     
     headers = {
-        "Authorization": "Bearer xxxxxxxxxxxxx",
+        "Authorization": "Bearer xxxxxxxxxxxx",
         "Content-Type": "application/json"
     }
     user = User.query.get(current_user.id)
@@ -362,9 +362,9 @@ def dify_chatbot_request(prompt):
     current_conversation_id = user_conversations.get(str(user.id), "")
 
     #打印参数
-    parameters = get_dify_parameters()
-    if parameters:
-        print("Dify Parameters:", parameters)
+    # parameters = get_dify_parameters()
+    # if parameters:
+    #     print("Dify Parameters:", parameters)
 
 
     data = {
@@ -438,30 +438,60 @@ def clear_chat():
 @login_required
 def story_write():
     if request.method == 'POST':
-        story = request.json.get('story')  # 从前端获取用户输入
-        if not story:
-            return jsonify({'error': 'Story content is required'}), 400
+        try:
+            story = request.json.get('story')  # 从前端获取用户输入
+            if not story:
+                return jsonify({'error': 'Story content is required'}), 400
 
-        # 调用 Dify API 获取反馈
-        headers = {
-            "Authorization": "Bearer xxxxxxxxxx",
-            "Content-Type": "application/json"
-        }
-        data = {
-            "inputs": {"stories": story},
-            "response_mode": "blocking",
-            "user": session.get('user_id', 'default-user')  # 使用唯一用户ID
-        }
+            # 打印故事长度以进行调试
+            app.logger.info(f"Story length: {len(story)}")
 
-        response = requests.post(DIFY_API_URL, headers=headers, data=json.dumps(data))
-        
-        if response.status_code != 200:
-            return jsonify({'error': 'Error fetching feedback'}), response.status_code
+            # 调用 Dify API 获取反馈
+            headers = {
+                "Authorization": "Bearer xxxxxxxxxxxxxxxxxxxx",
+                "Content-Type": "application/json"
+            }
+            
+            # 如果故事太长，可以截取一部分
+            max_length = 2000  # 设置最大长度
+            if len(story) > max_length:
+                story = story[:max_length] + "..."
+            
+            data = {
+                "inputs": {"stories": story},
+                "response_mode": "blocking",
+                "user": str(current_user.id)  # 使用当前用户ID
+            }
 
-        result = response.json()
-        feedback_text = result.get("data", {}).get("outputs", {}).get("output", "No output available.")
+            app.logger.info("Sending request to Dify API")
+            response = requests.post(
+                DIFY_API_URL, 
+                headers=headers, 
+                data=json.dumps(data),
+                timeout=30  # 增加超时时间
+            )
+            
+            app.logger.info(f"Dify API response status: {response.status_code}")
+            
+            if response.status_code != 200:
+                error_message = f"Dify API error: {response.text}"
+                app.logger.error(error_message)
+                return jsonify({'error': error_message}), response.status_code
 
-        return jsonify({'feedback': feedback_text})  # 将反馈结果以 JSON 格式返回
+            result = response.json()
+            feedback_text = result.get("data", {}).get("outputs", {}).get("output", "No output available.")
+            
+            return jsonify({'feedback': feedback_text})
+
+        except requests.Timeout:
+            error_message = "Request timed out. Please try with a shorter story."
+            app.logger.error(error_message)
+            return jsonify({'error': error_message}), 504
+            
+        except Exception as e:
+            error_message = f"Error processing request: {str(e)}"
+            app.logger.error(error_message)
+            return jsonify({'error': error_message}), 500
 
     return render_template('storywrite.html', user_id=session.get('user_id'))
 

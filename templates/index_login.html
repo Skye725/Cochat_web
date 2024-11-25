@@ -63,6 +63,35 @@
             display: none;
         }
 
+        .nav-links a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 可选：添加一个小指示器 */
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+
+        /* 确保链接有相对定位以支持指示器 */
+        .nav-links a {
+            position: relative;
+            /* 保留原有样式 */
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
         .main-content {
             margin-top: var(--nav-height);
             padding: 4rem 2rem;
@@ -140,10 +169,11 @@
 <body>
     <nav id="navbar">
         <div class="nav-links">
+            <a href="/index_login" class="active">Home</a>
             <a href="/profile">Your Profile</a>
-            <a href="/freewrite">Free Writing</a>
-            <a href="/storygenerate">Story Generator</a>
-            <a href="/storywrite">Writing Assistant</a>
+            <a href="/freewrite">Manual Writing</a>
+            <a href="/storygenerate">Automated Writing</a>
+            <a href="/storywrite">Guided Writing</a>
         </div>
         <div class="nav-links">
             <a href="/logout">Log Out</a>

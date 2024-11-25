@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>MOoD LoG WebSite</title>
+    <title>Tell Your Stories</title>
     <!-- Add Bootstrap framework -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- Add Google Fonts fonts -->
@@ -41,10 +41,128 @@
             font-weight: 600;
             color: #333;
         }
+
+        /* 添加模态框样式 */
+        .modal {
+            display: block;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 8px;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-body {
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .btn-agree {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-agree:hover {
+            background-color: #218838;
+        }
+
+        .btn-decline {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-decline:hover {
+            background-color: #c82333;
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: #333;
+        }
     </style>
 </head>
 
 <body>
+    <!-- 添加模态框 -->
+    <div id="userNoticeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">User Participation Notice</h2>
+            </div>
+            <div class="modal-body">
+                <p>Welcome to our story-sharing platform! Before proceeding, please carefully read the following terms to understand your rights, our responsibilities, and how we protect your data:</p>
+
+                <div class="section-title">1. Data Collection and Usage</div>
+                <p>• The personal information you provide (e.g., username, age, gender) and story content will be used to enable platform features, including displaying your stories, generating feedback, and storing them in your profile.</p>
+                <p>• We will only use your data with your consent and for specific, lawful purposes.</p>
+
+                <div class="section-title">2. Data Privacy and Protection</div>
+                <p>• Your data will be securely processed and stored in compliance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act (DPA) 2018.</p>
+                <p>• We employ robust technical and organizational measures to protect your data against unauthorized access, disclosure, or alteration.</p>
+
+                <div class="section-title">3. Your Rights</div>
+                <p>As a data subject, you have the following rights:</p>
+                <ul>
+                    <li>Right of Access: View the personal data we collect about you.</li>
+                    <li>Right to Rectification: Update or correct your personal information.</li>
+                    <li>Right to Erasure: Request the deletion of your account and stored data.</li>
+                    <li>Right to Object: Opt out of specific uses of your data.</li>
+                    <li>Right to Data Portability: Request to export your data to another platform.</li>
+                </ul>
+
+                <!-- 继续添加其他部分... -->
+
+                <div class="section-title">8. Contact Us</div>
+                <p>If you have any privacy-related questions or wish to exercise your data rights, please contact us at:</p>
+                <p>Email: 2808837s@student.gla.ac.uk</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-agree" onclick="acceptTerms()">Agree and continue</button>
+                <button class="btn btn-decline" onclick="declineTerms()">Decline and exit</button>
+            </div>
+        </div>
+    </div>
 
     <!-- navi -->
     <div id="navbar">
@@ -52,6 +170,27 @@
         <a href="/login">Sign In</a>
     </div>
     <h1>Welcome to the journey of storytelling and listening.</h1>
+
+    <script>
+        function acceptTerms() {
+            // 存储用户同意状态
+            localStorage.setItem('termsAccepted', 'true');
+            // 隐藏模态框
+            document.getElementById('userNoticeModal').style.display = 'none';
+        }
+
+        function declineTerms() {
+            // 重定向到其他页面或显示提示
+            window.location.href = 'https://www.google.com';
+        }
+
+        // 检查用户是否已经同意条款
+        window.onload = function() {
+            if (!localStorage.getItem('termsAccepted')) {
+                document.getElementById('userNoticeModal').style.display = 'block';
+            }
+        }
+    </script>
 
     <!-- Introducing Bootstrap JavaScript -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
