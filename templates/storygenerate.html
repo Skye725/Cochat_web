@@ -32,6 +32,51 @@
             height: 2px;
             background-color: rgb(59, 130, 246);
         }
+        .guide-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .guide-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .guide-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .guide-step {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: #f7fafc;
+            border-radius: 0.5rem;
+        }
+
+        .guide-step-title {
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+
+        .guide-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -89,6 +134,38 @@
                         Send
                     </button>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="guideModal" class="guide-modal">
+        <div class="guide-content">
+            <h2 class="guide-title">How to Use the Chatbot</h2>
+            
+            <div class="guide-step">
+                <div class="guide-step-title">1. Start Chatting</div>
+                <p>Talk to the chatbot.</p>
+            </div>
+
+            <div class="guide-step">
+                <div class="guide-step-title">2. Generate Story</div>
+                <p>Click "Generate Story" when you're ready to finish the conversation.</p>
+            </div>
+
+            <div class="guide-step">
+                <div class="guide-step-title">3. Edit Story</div>
+                <p>Click "Edit" to modify the generated story.</p>
+            </div>
+
+            <div class="guide-step">
+                <div class="guide-step-title">4. Save Story</div>
+                <p>Once satisfied, click "Save" to store your story.</p>
+            </div>
+
+            <div class="guide-footer">
+                <button onclick="closeGuide()" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                    Got it!
+                </button>
             </div>
         </div>
     </div>
@@ -295,6 +372,31 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('Failed to save story: ' + error.message);
+            }
+        }
+
+        // 添加新的函数
+        function showGuide() {
+            document.getElementById('guideModal').style.display = 'block';
+        }
+
+        function closeGuide() {
+            document.getElementById('guideModal').style.display = 'none';
+            localStorage.setItem('chatbotGuideShown', 'true');
+        }
+
+        // 在页面加载时检查是否需要显示引导
+        window.addEventListener('load', function() {
+            if (!localStorage.getItem('chatbotGuideShown')) {
+                showGuide();
+            }
+        });
+
+        // 点击模态框外部时关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('guideModal');
+            if (event.target == modal) {
+                closeGuide();
             }
         }
     </script>
