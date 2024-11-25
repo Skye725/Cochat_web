@@ -16,7 +16,6 @@ pip install -r requirements2.txt
 - add story titles  
 - Interface enhancement
 - story display methods
-- guide
 - 
 
   You can try using the following link:
