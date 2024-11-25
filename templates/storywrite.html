@@ -146,6 +146,29 @@
                 flex-direction: column;
             }
         }
+
+        .title-input-container {
+            margin-bottom: 15px;
+        }
+
+        .title-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .title-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        /* 调整文本框的高度，为标题腾出空间 */
+        #story-input {
+            height: calc(70% - 50px);
+        }
     </style>
 </head>
 <body>
@@ -168,7 +191,18 @@
     <div id="content">
         <!-- Input Section -->
         <div id="input-section">
-            <textarea id="story-input" placeholder="Type your story here..."></textarea>
+            <div class="title-input-container">
+                <input 
+                    type="text" 
+                    id="story-title" 
+                    placeholder="Enter your story title..." 
+                    class="title-input"
+                >
+            </div>
+            <textarea 
+                id="story-input" 
+                placeholder="Type your story here..."
+            ></textarea>
             <div class="button-group">
                 <button id="save-story">Save</button>
                 <button id="get-feedback">Get Feedback</button>
@@ -267,5 +301,49 @@
             }
         }
     </script>    
+    <script>
+        // 添加保存故事的事件监听器
+        document.getElementById("save-story").addEventListener("click", async function() {
+            const title = document.getElementById("story-title").value.trim();
+            const content = document.getElementById("story-input").value.trim();
+            
+            // 验证输入
+            if (!title) {
+                alert("Please enter a title for your story.");
+                return;
+            }
+            if (!content) {
+                alert("Please write your story before saving.");
+                return;
+            }
+
+            try {
+                const response = await fetch('/save_story', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        content: content
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    alert('Story saved successfully!');
+                    // 可选：清空输入框
+                    // document.getElementById("story-title").value = '';
+                    // document.getElementById("story-input").value = '';
+                } else {
+                    throw new Error(result.error || 'Failed to save story');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to save story: ' + error.message);
+            }
+        });
+    </script>
 </body>
 </html>
