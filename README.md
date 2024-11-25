@@ -13,10 +13,11 @@ pip install -r requirements2.txt
 **Features to be added:**  
 - Story card displayed on profile  
 - Story tag categorization  
-- Automatic story store in Chatbot1: generator
 - add story titles  
 - Interface enhancement
-- chatbot writer input length limitation
+- story display methods
+- guide
+- 
 
   You can try using the following link:
  [ https://cochatweb-SkyeW4.replit.app](https://cochatweb-SkyeW4.replit.app
