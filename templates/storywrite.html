@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StoryWrite</title>
     <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --background-color: #f5f7fa;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --border-radius: 12px;
+            --box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+
         /* 基本页面布局和导航栏样式 */
         body, html {
             font-family: Arial, sans-serif;
@@ -14,46 +24,63 @@
             flex-direction: column;
             height: 100vh;
             box-sizing: border-box;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
         }
 
         #navbar {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #343a40;
-            padding: 10px 20px;
-            color: white;
         }
 
-        #navbar a {
-            position: relative;
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
             text-decoration: none;
-            color: white;
-            margin: 0 10px;
-            padding: 5px 10px;
-            border-radius: 3px;
-            transition: background-color 0.2s ease;
-        }
-
-        #navbar a:hover {
-            background-color: #495057;
-        }
-
-        /* 添加导航栏活动状态样式 */
-        #navbar a.active {
-            background-color: #495057;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
             position: relative;
         }
 
-        #navbar a.active::after {
+        .nav-links a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-links a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 可选：添加一个小指示器 */
+        .nav-links a.active::after {
             content: '';
             position: absolute;
-            bottom: -2px;
+            bottom: -5px;
             left: 50%;
             transform: translateX(-50%);
             width: 20px;
-            height: 2px;
-            background-color: #007bff;
+            height: 3px;
+            background-color: var(--primary-color);
         }
 
         /* 页面标题 */
@@ -145,6 +172,16 @@
             #content {
                 flex-direction: column;
             }
+
+            .nav-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
         }
 
         .title-input-container {
@@ -173,15 +210,18 @@
 </head>
 <body>
     <div id="navbar">
-        <div>
-            <a href="/index_login">Home</a>
-            <a href="/profile">Profile</a>
-            <a href="/freewrite">Manual Writing</a>
-            <a href="/storygenerate">Automated Writing</a>
-            <a href="/storywrite" class="active">Guided Writing</a>
-        </div>
-        <div>
-            <a href="/logout">Log out</a>
+        <div class="nav-content">
+            <div class="nav-links">
+                <a href="/index_login">Home</a>
+                <a href="/my_stories">Story Base</a>
+                <a href="/freewrite">Manual Writing</a>
+                <a href="/storygenerate">Automated Writing</a>
+                <a href="/storywrite" class="active">Guided Writing</a>
+            </div>
+            <div class="nav-links">
+                <a href="/profile">Profile</a>
+                <a href="/logout">Log out</a>
+            </div>
         </div>
     </div>
 

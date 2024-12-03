@@ -11,8 +11,8 @@
             --text-color: #333;
             --nav-height: 70px;
             --transition: all 0.3s ease;
+            --border-radius: 12px;
         }
-
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
@@ -25,18 +25,20 @@
         }
 
         #navbar {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #343a40;
-            padding: 10px 20px;
-            color: white;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-sizing: border-box;
         }
 
         .nav-links {
@@ -44,23 +46,18 @@
             gap: 1.5rem;
         }
 
-        #navbar a {
+        .nav-links a {
             text-decoration: none;
-            color: white;
-            margin: 0 10px;
-            padding: 5px 10px;
-            border-radius: 3px;
-            transition: background-color 0.2s ease;
+            color: var(--text-color);
             font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
         }
 
-        #navbar a:hover {
-            background-color: #495057;
-            transform: translateY(-2px);
-        }
-
-        #navbar a::after {
-            display: none;
+        .nav-links a:hover {
+            background-color: var(--primary-color);
+            color: white;
         }
 
         .nav-links a.active {
@@ -90,8 +87,8 @@
             padding: 0.5rem 1rem;
             border-radius: var(--border-radius);
             transition: all 0.3s ease;
-        }
-
+        }        
+        
         .main-content {
             margin-top: var(--nav-height);
             padding: 4rem 2rem;
@@ -168,15 +165,18 @@
 
 <body>
     <nav id="navbar">
-        <div class="nav-links">
-            <a href="/index_login" class="active">Home</a>
-            <a href="/profile">Your Profile</a>
-            <a href="/freewrite">Manual Writing</a>
-            <a href="/storygenerate">Automated Writing</a>
-            <a href="/storywrite">Guided Writing</a>
-        </div>
-        <div class="nav-links">
-            <a href="/logout">Log Out</a>
+        <div class="nav-content">
+            <div class="nav-links">
+                <a href="/index_login" class="active">Home</a>
+                <a href="/my_stories">Story Base</a>
+                <a href="/freewrite">Manual Writing</a>
+                <a href="/storygenerate">Automated Writing</a>
+                <a href="/storywrite">Guided Writing</a>
+            </div>
+            <div class="nav-links">
+                <a href="/profile">Profile</a>
+                <a href="/logout">Sign Out</a>
+            </div>
         </div>
     </nav>
 

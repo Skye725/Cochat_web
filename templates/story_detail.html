@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Detail</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* 使用与 my_stories.html 相同的基础样式 */
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --background-color: #f5f7fa;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --border-radius: 12px;
+            --box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        #navbar {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-links a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 可选：添加一个小指示器 */
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+
+        /* 确保链接有相对定位以支持指示器 */
+        .nav-links a {
+            position: relative;
+            /* 保留原有样式 */
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .story-container {
+            background: var(--card-background);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .story-header {
+            margin-bottom: 2rem;
+        }
+
+        .story-title {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .story-time {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .story-content {
+            margin-bottom: 2rem;
+        }
+
+        .story-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-save {
+            background-color: #28a745;
+            color: white;
+            display: none;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            display: none;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .nav-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .story-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .delete-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            max-width: 400px;
+            width: 90%;
+            box-shadow: var(--box-shadow);
+        }
+
+        .delete-modal-title {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .delete-modal-message {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .delete-modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <div class="nav-content">
+            <div class="nav-links">
+                <a href="/index_login">Home</a>
+                <a href="/my_stories" class="active">Story Base</a>
+                <a href="/freewrite">Manual Writing</a>
+                <a href="/storygenerate">Automated Writing</a>
+                <a href="/storywrite">Guided Writing</a>
+            </div>
+            <div class="nav-links">
+                <a href="/profile">Profile</a>
+                <a href="/logout">Sign Out</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="story-container">
+            <div class="story-header">
+                <h1 class="story-title" id="story-title"></h1>
+                <div class="story-time" id="story-time"></div>
+            </div>
+            <div class="story-content" id="story-content"></div>
+            <textarea id="story-editor"></textarea>
+            <div class="story-actions">
+                <button class="btn btn-edit" id="edit-btn">Edit Story</button>
+                <button class="btn btn-save" id="save-btn">Save Changes</button>
+                <button class="btn btn-delete" id="delete-btn">Delete Story</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="delete-modal" id="deleteModal">
+        <div class="delete-modal-content">
+            <h2 class="delete-modal-title">Delete Story</h2>
+            <p class="delete-modal-message">Are you sure you want to delete this story? This action cannot be undone.</p>
+            <div class="delete-modal-buttons">
+                <button class="btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-delete" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const storyId = window.location.pathname.split('/').pop();
+        let isEditing = false;
+
+        function loadStory() {
+            fetch(`/get_story/${storyId}`)
+                .then(response => response.json())
+                .then(story => {
+                    document.getElementById('story-title').textContent = story.title;
+                    document.getElementById('story-time').textContent = new Date(story.time).toLocaleString();
+                    document.getElementById('story-content').textContent = story.content;
+                    document.getElementById('story-editor').value = story.content;
+                })
+                .catch(error => console.error('Error loading story:', error));
+        }
+
+        function toggleEdit() {
+            const content = document.getElementById('story-content');
+            const editor = document.getElementById('story-editor');
+            const editBtn = document.getElementById('edit-btn');
+            const saveBtn = document.getElementById('save-btn');
+
+            isEditing = !isEditing;
+            if (isEditing) {
+                content.style.display = 'none';
+                editor.style.display = 'block';
+                editBtn.style.display = 'none';
+                saveBtn.style.display = 'block';
+            } else {
+                content.style.display = 'block';
+                editor.style.display = 'none';
+                editBtn.style.display = 'block';
+                saveBtn.style.display = 'none';
+            }
+        }
+
+        async function saveStory() {
+            const content = document.getElementById('story-editor').value;
+            try {
+                const response = await fetch(`/update_story/${storyId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                if (response.ok) {
+                    toggleEdit();
+                    document.getElementById('story-content').textContent = content;
+                    alert('Story updated successfully!');
+                } else {
+                    throw new Error('Failed to update story');
+                }
+            } catch (error) {
+                console.error('Error updating story:', error);
+                alert('Failed to update story');
+            }
+        }
+
+        function deleteStory() {
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        async function confirmDelete() {
+            try {
+                const response = await fetch(`/delete_story/${storyId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    window.location.href = '/my_stories';
+                } else {
+                    throw new Error('Failed to delete story');
+                }
+            } catch (error) {
+                console.error('Error deleting story:', error);
+                alert('Failed to delete story');
+            }
+        }
+
+        // 点击模态框外部时关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target == modal) {
+                closeDeleteModal();
+            }
+        }
+
+        document.getElementById('edit-btn').addEventListener('click', toggleEdit);
+        document.getElementById('save-btn').addEventListener('click', saveStory);
+        document.getElementById('delete-btn').addEventListener('click', deleteStory);
+
+        window.onload = loadStory;
+    </script>
+</body>
+</html> 

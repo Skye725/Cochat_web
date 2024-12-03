@@ -6,6 +6,16 @@
     <title>AI Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --background-color: #f5f7fa;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --border-radius: 12px;
+            --box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+
         .message-container {
             height: calc(100vh - 220px);
         }
@@ -18,20 +28,73 @@
             33% { content: '..'; }
             66% { content: '...'; }
         }
-        .nav-active {
-            background-color: rgb(55, 65, 81);
+
+        #navbar {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
             position: relative;
         }
-        .nav-active::after {
+
+        .nav-links a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-links a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 可选：添加一个小指示器 */
+        .nav-links a.active::after {
             content: '';
             position: absolute;
-            bottom: -2px;
+            bottom: -5px;
             left: 50%;
             transform: translateX(-50%);
             width: 20px;
-            height: 2px;
-            background-color: rgb(59, 130, 246);
+            height: 3px;
+            background-color: var(--primary-color);
         }
+
+        @media (max-width: 768px) {
+            .nav-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
         .guide-modal {
             display: none;
             position: fixed;
@@ -81,22 +144,21 @@
 </head>
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="bg-gray-800 text-white">
-        <div class="container mx-auto max-w-4xl px-4 py-3">
-            <div class="flex justify-between items-center">
-                <div class="flex space-x-4">
-                    <a href="/index_login" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Home</a>
-                    <a href="/profile" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Your Profile</a>
-                    <a href="/freewrite" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Manual Writing</a>
-                    <a href="/storygenerate" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors nav-active">Automated Writing</a>
-                    <a href="/storywrite" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Guided Writing</a>
-                </div>
-                <div>
-                    <a href="/logout" class="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">Log out</a>
-                </div>
+    <div id="navbar">
+        <div class="nav-content">
+            <div class="nav-links">
+                <a href="/index_login">Home</a>
+                <a href="/my_stories">Story Base</a>
+                <a href="/freewrite">Manual Writing</a>
+                <a href="/storygenerate" class="active">Automated Writing</a>
+                <a href="/storywrite">Guided Writing</a>
+            </div>
+            <div class="nav-links">
+                <a href="/profile">Profile</a>
+                <a href="/logout">Sign Out</a>
             </div>
         </div>
-    </nav>
+    </div>
 
     <div class="container mx-auto max-w-4xl px-4 mt-4">
         <div class="bg-white rounded-lg shadow-lg h-[calc(100vh-140px)] flex flex-col">
@@ -120,7 +182,7 @@
                             <img src="{{ url_for('static', filename='icon.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
                         </div>
                         <div class="bg-gray-100 rounded-lg p-4 max-w-[80%]">
-                            <p>Hello, {{username}}! I am here to listen to your story and give mental support. Here, we will have a relaxed conversation and collect your basic information. I will ask you one question at a time until I have all the information I want to know. Afterwards, I will encourage you to share your story and help you revise it to make it more authentic and encouraging. Please feel free to relax and start our communication! What story you would like to share today?</p>
+                            <p>Hello, {{username}}! I am here to listen to your story. Here, we will have a relaxed conversation and collect your basic information. I will ask you one question at a time until I have all the information I want to know. Afterwards, I will encourage you to share your story and help you revise it to make it more authentic and encouraging. Please feel free to relax and start our communication! What story you would like to share today?</p>
                         </div>
                     </div>
                 </div>
@@ -149,7 +211,7 @@
 
             <div class="guide-step">
                 <div class="guide-step-title">2. Generate Story</div>
-                <p>Click "Generate Story" when you're ready to finish the conversation.</p>
+                <p>Click "Generate" when you're ready to finish the conversation.</p>
             </div>
 
             <div class="guide-step">
@@ -191,7 +253,8 @@
                 <div class="${isUser ? 'bg-blue-500 text-white' : 'bg-gray-100'} rounded-lg p-4 max-w-[80%]">
                     ${isStory ? `
                         <div class="story-card">
-                            <button onclick="toggleStoryEdit(this)" class="mb-2 text-blue-500 hover:text-blue-700">
+                            <p class="story-text">${content}</p>
+                            <button onclick="toggleStoryEdit(this)" class="mt-4 text-blue-500 hover:text-blue-700 font-bold text-lg border-2 border-blue-500 px-4 py-2 rounded-lg transition-all duration-300 hover:bg-blue-500 hover:text-white">
                                 Click to Edit Story
                             </button>
                             <div class="story-content hidden">
@@ -200,13 +263,12 @@
                                     Save Story
                                 </button>
                             </div>
-                            <p class="story-text">${content}</p>
                         </div>
                     ` : `<p>${content}</p>`}
                     ${!isUser && !isStory ? `
                         <div class="mt-2 flex justify-end">
                             <button onclick="startGenerating()" class="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">
-                                Generate Story
+                                Generate
                             </button>
                         </div>
                     ` : ''}

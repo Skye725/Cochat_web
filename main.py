@@ -14,7 +14,7 @@ import base64
 import io
 import os
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text, func
+from sqlalchemy import text, func, desc
 from datetime import datetime
 from datetime import timedelta
 import logging
@@ -353,7 +353,7 @@ def dify_chatbot_request(prompt):
     dify_api_url = "https://api.dify.ai/v1/chat-messages"
     
     headers = {
-        "Authorization": "Bearer xxxxxxxxxxxx",
+        "Authorization": "Bearer xxxxxxxxxxx",
         "Content-Type": "application/json"
     }
     user = User.query.get(current_user.id)
@@ -448,7 +448,7 @@ def story_write():
 
             # 调用 Dify API 获取反馈
             headers = {
-                "Authorization": "Bearer xxxxxxxxxxxxxxxxxxxx",
+                "Authorization": "Bearer xxxxxxxxxx",
                 "Content-Type": "application/json"
             }
             
@@ -494,6 +494,59 @@ def story_write():
             return jsonify({'error': error_message}), 500
 
     return render_template('storywrite.html', user_id=session.get('user_id'))
+
+# 添加新的路由
+@app.route('/my_stories')
+@login_required
+def my_stories():
+    return render_template('my_stories.html')
+
+@app.route('/get_stories')
+@login_required
+def get_stories():
+    stories = Story.query.filter_by(user_id=current_user.id).order_by(desc(Story.time)).all()
+    return jsonify({
+        'stories': [story.to_dict() for story in stories]
+    })
+
+@app.route('/story/<int:story_id>')
+@login_required
+def story_detail(story_id):
+    story = Story.query.get_or_404(story_id)
+    if story.user_id != current_user.id:
+        abort(403)
+    return render_template('story_detail.html')
+
+@app.route('/get_story/<int:story_id>')
+@login_required
+def get_story(story_id):
+    story = Story.query.get_or_404(story_id)
+    if story.user_id != current_user.id:
+        abort(403)
+    return jsonify(story.to_dict())
+
+@app.route('/update_story/<int:story_id>', methods=['POST'])
+@login_required
+def update_story(story_id):
+    story = Story.query.get_or_404(story_id)
+    if story.user_id != current_user.id:
+        abort(403)
+    
+    data = request.get_json()
+    story.content = data.get('content')
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/delete_story/<int:story_id>', methods=['DELETE'])
+@login_required
+def delete_story(story_id):
+    story = Story.query.get_or_404(story_id)
+    if story.user_id != current_user.id:
+        abort(403)
+    
+    db.session.delete(story)
+    db.session.commit()
+    return jsonify({'success': True})
 
 
 
