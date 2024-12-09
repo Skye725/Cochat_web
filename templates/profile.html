@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -38,6 +41,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 2rem;
         }
 
         .nav-links {
@@ -45,13 +49,28 @@
             gap: 1.5rem;
         }
 
+        .nav-links:first-child {
+            margin-right: auto;
+            padding-right: 2rem;
+        }
+
+        .nav-links:last-child {
+            margin-left: auto;
+            padding-left: 2rem;
+            border-left: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
         .nav-links a {
+            position: relative;
             text-decoration: none;
             color: var(--text-color);
             font-weight: 500;
             padding: 0.5rem 1rem;
             border-radius: var(--border-radius);
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .nav-links a:hover {
@@ -75,31 +94,39 @@
             background-color: var(--primary-color);
         }
 
-    /* 确保链接有相对定位以支持指示器 */
-        .nav-links a {
-            position: relative;
-            /* 保留原有样式 */
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: var(--border-radius);
-            transition: all 0.3s ease;
+        .nav-links .writing-link {
+            background-color: rgba(74, 144, 226, 0.1);
+            border: 1px solid rgba(74, 144, 226, 0.2);
         }
 
+        .nav-links .writing-link:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-links .writing-link.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
+        }
 
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 2rem auto;
             padding: 0 1.5rem;
         }
 
-        .profile-section {
+        .profile-card {
             background: var(--card-background);
             padding: 2rem;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            margin-bottom: 2rem;
+            position: relative;
         }
 
         .profile-header {
@@ -115,307 +142,267 @@
 
         .profile-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: 1rem;
+            margin-top: 2rem;
         }
 
-        .info-group {
+        .info-item {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            background: var(--background-color);
+            border-radius: var(--border-radius);
         }
 
         .info-label {
             font-weight: 500;
-            margin-bottom: 0.5rem;
+            width: 120px;
             color: var(--secondary-color);
         }
 
-        .info-input {
-            padding: 0.8rem;
+        .info-value {
+            flex: 1;
+        }
+
+        .edit-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .edit-form {
+            display: none;
+        }
+
+        .edit-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
             border: 2px solid #e0e0e0;
             border-radius: var(--border-radius);
             font-size: 1rem;
             transition: all 0.3s ease;
         }
 
-        .info-input:focus {
+        select:focus, input[type="number"]:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
         }
 
-        .stories-section {
-            background: var(--card-background);
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            margin-top: 2rem;
-        }
-
-        .stories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .story-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .story-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .story-title {
-            font-size: 1.2rem;
-            color: var(--secondary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .story-time {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 1rem;
-        }
-
-        .story-preview {
-            color: #444;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .save-button {
+        .save-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 1rem 2rem;
+            padding: 0.5rem 1rem;
             border-radius: var(--border-radius);
-            font-size: 1rem;
-            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 2rem;
         }
 
-        .save-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-
-        .modal-content {
-            position: relative;
-            background-color: white;
-            margin: 5% auto;
-            padding: 2rem;
-            width: 80%;
-            max-width: 800px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-
-        .close-button {
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .close-button:hover {
-            color: #333;
+        .save-btn:hover {
+            opacity: 0.9;
         }
 
         @media (max-width: 768px) {
-            .profile-info {
-                grid-template-columns: 1fr;
-            }
-
-            .stories-grid {
-                grid-template-columns: 1fr;
-            }
-
             .nav-content {
                 flex-direction: column;
                 gap: 1rem;
+                padding: 0 1rem;
             }
 
             .nav-links {
                 flex-wrap: wrap;
                 justify-content: center;
             }
+
+            .nav-links:first-child,
+            .nav-links:last-child {
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .nav-icon {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="navbar">
+    <nav id="navbar">
         <div class="nav-content">
             <div class="nav-links">
-                <a href="/index_login">Home</a>
-                <a href="/profile" class="active">Your Profile</a>
-                <a href="/freewrite">Manual Writing</a>
-                <a href="/storygenerate">Automated Writing</a>
-                <a href="/storywrite">Guided Writing</a>
+                <a href="/index_login">
+                    <i class="nav-icon fas fa-home"></i>
+                    Home
+                </a>
+                <a href="/my_stories">
+                    <i class="nav-icon fas fa-book"></i>
+                    My Stories
+                </a>
+                <a href="/freewrite" class="writing-link">
+                    <i class="nav-icon fas fa-pen"></i>
+                    Manual Writing
+                </a>
+                <a href="/storygenerate" class="writing-link">
+                    <i class="nav-icon fas fa-robot"></i>
+                    Dialogue Based Writing
+                </a>
+                <a href="/storywrite" class="writing-link">
+                    <i class="nav-icon fas fa-compass"></i>
+                    Feedback Based Writing
+                </a>
             </div>
             <div class="nav-links">
-                <a href="/logout">Sign Out</a>
+                <a href="/profile" class="active">
+                    <i class="nav-icon fas fa-user"></i>
+                    Profile
+                </a>
+                <a href="/logout">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    Sign Out
+                </a>
             </div>
         </div>
-    </div>
+    </nav>
 
     <div class="container">
-        <div class="profile-section">
+        <div class="profile-card">
+            <button class="edit-btn" onclick="toggleEdit()">Edit Profile</button>
             <div class="profile-header">
-                <h1 class="profile-title">My Profile</h1>
+                <h1 class="profile-title">Profile</h1>
             </div>
-            <div class="profile-info">
-                <div class="info-group">
-                    <label class="info-label">Username</label>
-                    <input type="text" id="username" class="info-input" disabled>
+            
+            <div class="profile-info" id="info-display">
+                <div class="info-item">
+                    <div class="info-label">Username:</div>
+                    <div class="info-value" id="username-value"></div>
                 </div>
-                <div class="info-group">
-                    <label class="info-label">Gender</label>
-                    <select id="gender" class="info-input">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
+                <div class="info-item">
+                    <div class="info-label">Gender:</div>
+                    <div class="info-value" id="gender-value"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Age:</div>
+                    <div class="info-value" id="age-value"></div>
+                </div>
+            </div>
+
+            <div class="edit-form" id="edit-form">
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
                     </select>
                 </div>
-                <div class="info-group">
-                    <label class="info-label">Age</label>
-                    <input type="number" id="age" class="info-input">
+                <div class="form-group">
+                    <label for="age">Age:</label>
+                    <input type="number" id="age" name="age" required min="1" max="120">
                 </div>
+                <button class="save-btn" onclick="saveProfile()">Save Changes</button>
             </div>
-            <button class="save-button" onclick="saveProfile()">Save Profile</button>
-        </div>
-
-        <div class="stories-section">
-            <h2>My Stories</h2>
-            <div id="storiesList" class="stories-grid"></div>
-        </div>
-    </div>
-
-    <!-- Modal for story details -->
-    <div id="storyModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle"></h2>
-            <p id="modalTime"></p>
-            <div id="modalContent"></div>
         </div>
     </div>
 
     <script>
+        // 加载个人信息
         function loadProfile() {
             fetch('/load_profile')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById("username").value = data.username;
-                    document.getElementById("gender").value = data.gender || "Male";
-                    document.getElementById("age").value = data.age || "";
+                    document.getElementById('username-value').textContent = data.username;
+                    document.getElementById('gender-value').textContent = data.gender || 'Not specified';
+                    document.getElementById('age-value').textContent = data.age || 'Not specified';
                     
-                    const storiesList = document.getElementById("storiesList");
-                    if (data.stories && data.stories.length > 0) {
-                        storiesList.innerHTML = data.stories.map(story => `
-                            <div class="story-card" onclick="showStoryDetails('${escapeHtml(story.title)}', '${story.time}', '${escapeHtml(story.content)}')">
-                                <h3 class="story-title">${escapeHtml(story.title) || 'Untitled Story'}</h3>
-                                <div class="story-time">${new Date(story.time).toLocaleString()}</div>
-                                <div class="story-preview">${escapeHtml(story.content.substring(0, 150))}${story.content.length > 150 ? '...' : ''}</div>
-                            </div>
-                        `).join("");
-                    } else {
-                        storiesList.innerHTML = '<p>No stories yet. Start writing!</p>';
-                    }
+                    // 设置表单的初始值
+                    document.getElementById('gender').value = data.gender || 'male';
+                    document.getElementById('age').value = data.age || '';
                 })
-                .catch(error => {
-                    console.error('Error loading profile:', error);
-                    alert('Failed to load profile data');
-                });
+                .catch(error => console.error('Error loading profile:', error));
         }
 
-        function saveProfile() {
-            const profileData = {
-                gender: document.getElementById("gender").value,
-                age: document.getElementById("age").value
-            };
+        // 切换编辑模式
+        function toggleEdit() {
+            const infoDisplay = document.getElementById('info-display');
+            const editForm = document.getElementById('edit-form');
+            const editBtn = document.querySelector('.edit-btn');
 
-            fetch('/save_profile', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(profileData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("Profile saved successfully!");
-                    loadProfile(); // Reload the profile data
-                } else {
-                    alert("Error saving profile.");
-                }
-            });
-        }
-
-        function showStoryDetails(title, time, content) {
-            const modal = document.getElementById("storyModal");
-            const modalTitle = document.getElementById("modalTitle");
-            const modalTime = document.getElementById("modalTime");
-            const modalContent = document.getElementById("modalContent");
-
-            modalTitle.textContent = title || 'Untitled Story';
-            modalTime.textContent = new Date(time).toLocaleString();
-            modalContent.textContent = content;
-
-            modalContent.style.whiteSpace = 'pre-wrap';
-            modalContent.style.lineHeight = '1.6';
-            modalContent.style.marginTop = '1rem';
-
-            modal.style.display = "block";
-        }
-
-        function closeModal() {
-            document.getElementById("storyModal").style.display = "none";
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById("storyModal");
-            if (event.target == modal) {
-                modal.style.display = "none";
+            if (editForm.classList.contains('active')) {
+                editForm.classList.remove('active');
+                infoDisplay.style.display = 'grid';
+                editBtn.textContent = 'Edit Profile';
+            } else {
+                editForm.classList.add('active');
+                infoDisplay.style.display = 'none';
+                editBtn.textContent = 'Cancel';
             }
         }
 
-        // Load profile data when the page loads
-        window.onload = loadProfile;
+        // 保存个人信息
+        async function saveProfile() {
+            const gender = document.getElementById('gender').value;
+            const age = document.getElementById('age').value;
 
-        // 添加 HTML 转义函数
-        function escapeHtml(unsafe) {
-            return unsafe
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+            try {
+                const response = await fetch('/save_profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        gender: gender,
+                        age: parseInt(age)
+                    })
+                });
+
+                if (response.ok) {
+                    loadProfile();
+                    toggleEdit();
+                    alert('Profile updated successfully!');
+                } else {
+                    throw new Error('Failed to update profile');
+                }
+            } catch (error) {
+                console.error('Error saving profile:', error);
+                alert('Failed to update profile');
+            }
         }
+
+        // 页面加载时获取个人信息
+        window.onload = loadProfile;
     </script>
 </body>
 </html>

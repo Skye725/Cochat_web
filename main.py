@@ -5,14 +5,9 @@ from flask import Flask
 import requests
 from flask import request, jsonify, render_template, redirect, url_for, flash, session
 import numpy as np
-# import cv2
 import json
 import base64
-# from PIL import Image
-# from io import BytesIO
-# from keras.models import load_model
 import io
-import os
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text, func, desc
 from datetime import datetime
@@ -26,7 +21,7 @@ from pytz import timezone
 import pandas as pd
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-# import tensorflow as tf
+
 
 # # new at 0223 12:46
 # from tensorflow.python.platform import build_info
@@ -118,11 +113,35 @@ def signup():
         username = request.form.get('username')
         password = request.form.get('password')
         email = request.form.get('email')
+        gender = request.form.get('gender')
+        age = request.form.get('age')
+        
+        # 验证年龄是否为有效数字
+        try:
+            age = int(age)
+            if age < 1 or age > 120:
+                flash('Please enter a valid age between 1 and 120', 'warning')
+                return redirect(url_for('signup'))
+        except ValueError:
+            flash('Please enter a valid age', 'warning')
+            return redirect(url_for('signup'))
+        
+        # 验证性别是否为有效选项
+        if gender not in ['male', 'female', 'other']:
+            flash('Please select a valid gender', 'warning')
+            return redirect(url_for('signup'))
+        
         user = User.query.filter_by(username=username).first()
         if user:
             flash('username already exists', 'warning')
             return redirect(url_for('signup'))
-        new_user = User(username=username, email=email)
+        
+        new_user = User(
+            username=username, 
+            email=email,
+            gender=gender,
+            age=age
+        )
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
@@ -177,6 +196,7 @@ class Story(db.Model):
     title = db.Column(db.String(200))  # 故事主题
     content = db.Column(db.Text)  # 故事内容
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # 外键，指向 User
+    writing_mode = db.Column(db.String(50), nullable=False)  # 'manual', 'dialogue', 'feedback'
 
     def __repr__(self):
         return f'<Story {self.title}>'
@@ -187,7 +207,8 @@ class Story(db.Model):
             "time": self.time.isoformat(),  # 将日期时间对象转换为字符串
             "title":self.title,
             "content": self.content,
-            "user_id": self.user_id
+            "user_id": self.user_id,
+            "writing_mode": self.writing_mode
         }
 
 
@@ -239,24 +260,10 @@ def pre_img():
 def load_profile():
     user = User.query.get(current_user.id)
     if user:
-        # 获取用户的所有故事
-        stories = Story.query.filter_by(user_id=user.id).all()
-        stories_data = []
-        
-        for story in stories:
-            story_dict = {
-                "id": story.id,
-                "title": story.title,
-                "content": story.content,
-                "time": story.time.isoformat() if story.time else None
-            }
-            stories_data.append(story_dict)
-        
         profile_data = {
             "username": user.username,
             "gender": user.gender,
-            "age": user.age,
-            "stories": stories_data
+            "age": user.age
         }
         return jsonify(profile_data)
     return jsonify({"error": "User not found"}), 404
@@ -266,19 +273,11 @@ def load_profile():
 @login_required
 def save_profile():
     data = request.get_json()
-
     user = User.query.get(current_user.id)
     
     if user:
-        # Save gender and age
         user.gender = data.get('gender')
         user.age = data.get('age')
-
-        # Save each story
-        for story_data in data.get('stories', []):
-            story = Story.query.get(story_data['id'])
-            if story:
-                story.content = story_data['content']
         
         db.session.commit()
         return jsonify({"success": True})
@@ -299,14 +298,21 @@ def save_story():
         data = request.get_json()
         title = data.get('title')
         content = data.get('content')
-
-        if not title or not content:
-            return jsonify({'error': 'Title and content cannot be empty'}), 400
-
+        writing_mode = data.get('writing_mode')  # 从请求中获取写作模式
+        
+        if not all([title, content, writing_mode]):
+            return jsonify({'error': 'Title, content and writing mode cannot be empty'}), 400
+        
+        # 验证写作模式是否有效
+        valid_modes = ['manual', 'dialogue', 'feedback']
+        if writing_mode not in valid_modes:
+            return jsonify({'error': 'Invalid writing mode'}), 400
+        
         new_story = Story(
             title=title,
             content=content,
-            user_id=current_user.id
+            user_id=current_user.id,
+            writing_mode=writing_mode
         )
         
         db.session.add(new_story)
@@ -349,11 +355,12 @@ def story_generate():
 
 
 #dify聊天调用
+###################################################################################
 def dify_chatbot_request(prompt):
     dify_api_url = "https://api.dify.ai/v1/chat-messages"
     
     headers = {
-        "Authorization": "Bearer xxxxxxxxxxx",
+        "Authorization": "Bearer xxxxxxx",
         "Content-Type": "application/json"
     }
     user = User.query.get(current_user.id)
@@ -429,11 +436,7 @@ def clear_chat():
         return jsonify({'error': str(e)}), 500
 
 # #chatbot2
-# @app.route('/storywrite', methods=['GET', 'POST'])
-# @login_required
-# def story_write():
-#     return render_template('/storywrite.html', user_id=session.get('user_id'))
-
+###################################################################################
 @app.route('/storywrite', methods=['GET', 'POST'])
 @login_required
 def story_write():
@@ -448,7 +451,7 @@ def story_write():
 
             # 调用 Dify API 获取反馈
             headers = {
-                "Authorization": "Bearer xxxxxxxxxx",
+                "Authorization": "Bearer xxxxxxx",
                 "Content-Type": "application/json"
             }
             
@@ -480,8 +483,12 @@ def story_write():
 
             result = response.json()
             feedback_text = result.get("data", {}).get("outputs", {}).get("output", "No output available.")
+            score = result.get("data", {}).get("outputs", {}).get("score", "No score available.")
             
-            return jsonify({'feedback': feedback_text})
+            return jsonify({
+                'feedback': feedback_text,
+                'score': score
+            })
 
         except requests.Timeout:
             error_message = "Request timed out. Please try with a shorter story."
@@ -513,24 +520,24 @@ def get_stories():
 @login_required
 def story_detail(story_id):
     story = Story.query.get_or_404(story_id)
-    if story.user_id != current_user.id:
-        abort(403)
+    # if story.user_id != current_user.id:
+    #     abort(403)
     return render_template('story_detail.html')
 
 @app.route('/get_story/<int:story_id>')
 @login_required
 def get_story(story_id):
     story = Story.query.get_or_404(story_id)
-    if story.user_id != current_user.id:
-        abort(403)
+    # if story.user_id != current_user.id:
+    #     abort(403)
     return jsonify(story.to_dict())
 
 @app.route('/update_story/<int:story_id>', methods=['POST'])
 @login_required
 def update_story(story_id):
     story = Story.query.get_or_404(story_id)
-    if story.user_id != current_user.id:
-        abort(403)
+    # if story.user_id != current_user.id:
+    #     abort(403)
     
     data = request.get_json()
     story.content = data.get('content')
@@ -541,8 +548,8 @@ def update_story(story_id):
 @login_required
 def delete_story(story_id):
     story = Story.query.get_or_404(story_id)
-    if story.user_id != current_user.id:
-        abort(403)
+    # if story.user_id != current_user.id:
+    #     abort(403)
     
     db.session.delete(story)
     db.session.commit()

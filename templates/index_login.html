@@ -3,6 +3,7 @@
 <head>
     <title>Record Your Story</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -39,11 +40,23 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 2rem;
         }
 
         .nav-links {
             display: flex;
             gap: 1.5rem;
+        }
+
+        .nav-links:first-child {
+            margin-right: auto;
+            padding-right: 2rem;
+        }
+
+        .nav-links:last-child {
+            margin-left: auto;
+            padding-left: 2rem;
+            border-left: 2px solid rgba(0, 0, 0, 0.1);
         }
 
         .nav-links a {
@@ -53,6 +66,10 @@
             padding: 0.5rem 1rem;
             border-radius: var(--border-radius);
             transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .nav-links a:hover {
@@ -90,12 +107,16 @@
         }        
         
         .main-content {
-            margin-top: var(--nav-height);
+            margin-top: 1rem;
             padding: 4rem 2rem;
             max-width: 1200px;
             margin-left: auto;
             margin-right: auto;
             animation: fadeIn 1s ease-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - var(--nav-height) - 4rem);
         }
 
         .welcome-message {
@@ -103,34 +124,131 @@
             line-height: 1.8;
             font-size: 1.1rem;
             color: #2c3e50;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 1.5rem 2rem;
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             transform: translateY(20px);
             opacity: 0;
             animation: slideUp 0.8s ease-out forwards;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
         .welcome-message h1 {
             font-size: 2rem;
             color: var(--primary-color);
-            margin-bottom: 2rem;
-            font-weight: 600;
+            position: relative;
+            display: inline-block;
+            margin: 0 auto;
+            padding-bottom: 1rem;
+        }
+
+        .welcome-message h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary-color), transparent);
         }
 
         .welcome-message p {
-            margin-bottom: 1.5rem;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0.8rem 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .welcome-message p:hover {
+            transform: translateX(10px);
+            background: rgba(74, 144, 226, 0.05);
+            border-radius: var(--border-radius);
+        }
+
+        .message-container {
+            display: grid;
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .highlight-text {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .writing-options {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .writing-options h2 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .option-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .option-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .option-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+            margin: 0;
+        }
+
+        .option-description {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+            margin: 0;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
+                transform: translateY(0);
             }
         }
 
@@ -142,23 +260,70 @@
         }
 
         @media (max-width: 768px) {
-            #navbar {
+            .welcome-message {
+                padding: 1.5rem;
+                font-size: 1rem;
+                margin: 1rem;
+            }
+
+            .welcome-message h1 {
+                font-size: 1.8rem;
+            }
+
+            .welcome-message p {
+                padding: 0.6rem 1rem;
+            }
+
+            .options-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .nav-icon {
+                font-size: 1rem;
+            }
+
+            .nav-content {
+                flex-direction: column;
+                gap: 1rem;
                 padding: 0 1rem;
             }
 
             .nav-links {
-                gap: 0.8rem;
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
-            #navbar a {
-                padding: 0.6rem 0.8rem;
-                font-size: 0.9rem;
+            .nav-links:first-child,
+            .nav-links:last-child {
+                margin: 0;
+                padding: 0;
+                border: none;
             }
+        }
 
-            .welcome-message {
-                padding: 1.5rem;
-                font-size: 1rem;
-            }
+        .nav-links .writing-link {
+            background-color: rgba(74, 144, 226, 0.1);
+            border: 1px solid rgba(74, 144, 226, 0.2);
+        }
+
+        .nav-links .writing-link:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .nav-links .writing-link.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
         }
     </style>
 </head>
@@ -167,15 +332,36 @@
     <nav id="navbar">
         <div class="nav-content">
             <div class="nav-links">
-                <a href="/index_login" class="active">Home</a>
-                <a href="/my_stories">Story Base</a>
-                <a href="/freewrite">Manual Writing</a>
-                <a href="/storygenerate">Automated Writing</a>
-                <a href="/storywrite">Guided Writing</a>
+                <a href="/index_login" class="active">
+                    <i class="nav-icon fas fa-home"></i>
+                    Home
+                </a>
+                <a href="/my_stories">
+                    <i class="nav-icon fas fa-book"></i>
+                    My Stories
+                </a>
+                <a href="/freewrite" class="writing-link">
+                    <i class="nav-icon fas fa-pen"></i>
+                    Manual Writing
+                </a>
+                <a href="/storygenerate" class="writing-link">
+                    <i class="nav-icon fas fa-robot"></i>
+                    Dialogue Based Writing
+                </a>
+                <a href="/storywrite" class="writing-link">
+                    <i class="nav-icon fas fa-compass"></i>
+                    Feedback Based Writing
+                </a>
             </div>
             <div class="nav-links">
-                <a href="/profile">Profile</a>
-                <a href="/logout">Sign Out</a>
+                <a href="/profile">
+                    <i class="nav-icon fas fa-user"></i>
+                    Profile
+                </a>
+                <a href="/logout">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    Sign Out
+                </a>
             </div>
         </div>
     </nav>
@@ -183,10 +369,34 @@
     <div class="main-content">
         <div class="welcome-message">
             <h1>Welcome to Your Story Space</h1>
-            <p>Everyone carries unique stories within them—stories that shape who we are and connect us with others.</p>
-            <p>Today, we invite you to share your story in a safe and open environment. Whether it's a memorable experience, a journey of growth, or a meaningful moment, any of these can be the starting point of your narrative.</p>
-            <p>Sharing isn't just about expression; it's an opportunity for self-healing and connecting with those who listen. Let's listen, understand, and appreciate the power in each word you share.</p>
-            <p>Take your time, feel free to speak from the heart—this is your story.</p>
+            <div class="message-container">
+                <p>Everyone carries <span class="highlight-text">unique stories</span> within them—stories that shape who we are and connect us with others.</p>
+                
+                <p>Today, you are invited to share your story in a safe and open environment. Whether it's a memorable experience, a journey of growth, or a meaningful moment, any of these can be the starting point of your narrative.</p>
+                
+                <p>Sharing isn't just about expression; it's an opportunity for <span class="highlight-text">self-healing</span> and connecting with those who listen. Take your time, feel free to speak from the heart—<span class="highlight-text">this is your story</span>.</p>
+                <!-- <p>Take your time, feel free to speak from the heart—<span class="highlight-text">this is your story</span>.</p> -->
+            </div>
+            <div class="writing-options">
+                <h2>You are free to choose any writing style to begin crafting your story!</h2>
+                <div class="options-container">
+                    <a href="/freewrite" class="option-card">
+                        <div class="option-icon">✍️</div>
+                        <h3 class="option-title">Manual Writing</h3>
+                        <p class="option-description">Write freely with your own words and thoughts</p>
+                    </a>
+                    <a href="/storygenerate" class="option-card">
+                        <div class="option-icon">🤖</div>
+                        <h3 class="option-title">Dialogue Based Writing</h3>
+                        <p class="option-description">Let AI help you generate your story through conversation</p>
+                    </a>
+                    <a href="/storywrite" class="option-card">
+                        <div class="option-icon">🎯</div>
+                        <h3 class="option-title">Feedback Based Writing</h3>
+                        <p class="option-description">Get writing suggestions and feedback as you write</p>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </body>

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -44,11 +46,23 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 2rem;
         }
 
         .nav-links {
             display: flex;
             gap: 1.5rem;
+        }
+
+        .nav-links:first-child {
+            margin-right: auto;
+            padding-right: 2rem;
+        }
+
+        .nav-links:last-child {
+            margin-left: auto;
+            padding-left: 2rem;
+            border-left: 2px solid rgba(0, 0, 0, 0.1);
         }
 
         .nav-links a {
@@ -59,6 +73,9 @@
             border-radius: var(--border-radius);
             transition: all 0.3s ease;
             position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .nav-links a:hover {
@@ -71,7 +88,6 @@
             color: white;
         }
 
-        /* 可选：添加一个小指示器 */
         .nav-links a.active::after {
             content: '';
             position: absolute;
@@ -83,15 +99,53 @@
             background-color: var(--primary-color);
         }
 
+        .nav-links .writing-link {
+            background-color: rgba(74, 144, 226, 0.1);
+            border: 1px solid rgba(74, 144, 226, 0.2);
+        }
+
+        .nav-links .writing-link:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-links .writing-link.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
+        }
+
         @media (max-width: 768px) {
             .nav-content {
                 flex-direction: column;
                 gap: 1rem;
+                padding: 0 1rem;
             }
 
             .nav-links {
                 flex-wrap: wrap;
                 justify-content: center;
+            }
+
+            .nav-links:first-child,
+            .nav-links:last-child {
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .nav-icon {
+                font-size: 1rem;
             }
         }
 
@@ -143,22 +197,42 @@
     </style>
 </head>
 <body class="bg-gray-100">
-    <!-- Navigation Bar -->
-    <div id="navbar">
+    <nav id="navbar">
         <div class="nav-content">
             <div class="nav-links">
-                <a href="/index_login">Home</a>
-                <a href="/my_stories">Story Base</a>
-                <a href="/freewrite">Manual Writing</a>
-                <a href="/storygenerate" class="active">Automated Writing</a>
-                <a href="/storywrite">Guided Writing</a>
+                <a href="/index_login">
+                    <i class="nav-icon fas fa-home"></i>
+                    Home
+                </a>
+                <a href="/my_stories">
+                    <i class="nav-icon fas fa-book"></i>
+                    My Stories
+                </a>
+                <a href="/freewrite" class="writing-link">
+                    <i class="nav-icon fas fa-pen"></i>
+                    Manual Writing
+                </a>
+                <a href="/storygenerate" class="writing-link active">
+                    <i class="nav-icon fas fa-robot"></i>
+                    Dialogue Based Writing
+                </a>
+                <a href="/storywrite" class="writing-link">
+                    <i class="nav-icon fas fa-compass"></i>
+                    Feedback Based Writing
+                </a>
             </div>
             <div class="nav-links">
-                <a href="/profile">Profile</a>
-                <a href="/logout">Sign Out</a>
+                <a href="/profile">
+                    <i class="nav-icon fas fa-user"></i>
+                    Profile
+                </a>
+                <a href="/logout">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    Sign Out
+                </a>
             </div>
         </div>
-    </div>
+    </nav>
 
     <div class="container mx-auto max-w-4xl px-4 mt-4">
         <div class="bg-white rounded-lg shadow-lg h-[calc(100vh-140px)] flex flex-col">
@@ -411,8 +485,9 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        title: 'Generated Story',  // 可以根据需要修改标题
-                        content: content
+                        title: 'Generated Story',
+                        content: content,
+                        writing_mode: 'dialogue'
                     })
                 });
 

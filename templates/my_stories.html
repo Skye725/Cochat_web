@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Stories</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #4a90e2;
@@ -40,11 +41,23 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 2rem;
         }
 
         .nav-links {
             display: flex;
             gap: 1.5rem;
+        }
+
+        .nav-links:first-child {
+            margin-right: auto;
+            padding-right: 2rem;
+        }
+
+        .nav-links:last-child {
+            margin-left: auto;
+            padding-left: 2rem;
+            border-left: 2px solid rgba(0, 0, 0, 0.1);
         }
 
         .nav-links a {
@@ -55,6 +68,9 @@
             border-radius: var(--border-radius);
             transition: all 0.3s ease;
             position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .nav-links a:hover {
@@ -76,6 +92,10 @@
             width: 20px;
             height: 3px;
             background-color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
         }
 
         .container {
@@ -105,10 +125,80 @@
             box-shadow: var(--box-shadow);
             cursor: pointer;
             transition: transform 0.2s ease;
+            border-left: 4px solid transparent;
+            position: relative;
         }
 
         .story-card:hover {
             transform: translateY(-5px);
+        }
+
+        .story-card.manual {
+            border-left-color: #4CAF50;  /* 绿色代表手动写作 */
+        }
+
+        .story-card.dialogue {
+            border-left-color: #2196F3;  /* 蓝色代表对话式写作 */
+        }
+
+        .story-card.feedback {
+            border-left-color: #FF9800;  /* 橙色代表反馈式写作 */
+        }
+
+        .writing-mode-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: white;
+        }
+
+        .writing-mode-badge.manual {
+            background-color: #4CAF50;
+        }
+
+        .writing-mode-badge.dialogue {
+            background-color: #2196F3;
+        }
+
+        .writing-mode-badge.feedback {
+            background-color: #FF9800;
+        }
+
+        .writing-mode-legend {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-color.manual {
+            background-color: #4CAF50;
+        }
+
+        .legend-color.dialogue {
+            background-color: #2196F3;
+        }
+
+        .legend-color.feedback {
+            background-color: #FF9800;
         }
 
         .story-title {
@@ -144,6 +234,7 @@
             .nav-content {
                 flex-direction: column;
                 gap: 1rem;
+                padding: 0 1rem;
             }
 
             .nav-links {
@@ -151,31 +242,87 @@
                 justify-content: center;
             }
 
+            .nav-links:first-child,
+            .nav-links:last-child {
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .nav-icon {
+                font-size: 1rem;
+            }
+
             .stories-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .writing-mode-legend {
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
-    <div id="navbar">
+    <nav id="navbar">
         <div class="nav-content">
             <div class="nav-links">
-                <a href="/index_login">Home</a>
-                <a href="/my_stories" class="active">Story Base</a>
-                <a href="/freewrite">Manual Writing</a>
-                <a href="/storygenerate">Automated Writing</a>
-                <a href="/storywrite">Guided Writing</a>
+                <a href="/index_login">
+                    <i class="nav-icon fas fa-home"></i>
+                    Home
+                </a>
+                <a href="/my_stories" class="active">
+                    <i class="nav-icon fas fa-book"></i>
+                    My Stories
+                </a>
+                <a href="/freewrite" class="writing-link">
+                    <i class="nav-icon fas fa-pen"></i>
+                    Manual Writing
+                </a>
+                <a href="/storygenerate" class="writing-link">
+                    <i class="nav-icon fas fa-robot"></i>
+                    Dialogue Based Writing
+                </a>
+                <a href="/storywrite" class="writing-link">
+                    <i class="nav-icon fas fa-compass"></i>
+                    Feedback Based Writing
+                </a>
             </div>
             <div class="nav-links">
-                <a href="/profile">Profile</a>
-                <a href="/logout">Sign Out</a>
+                <a href="/profile">
+                    <i class="nav-icon fas fa-user"></i>
+                    Profile
+                </a>
+                <a href="/logout">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    Sign Out
+                </a>
             </div>
         </div>
-    </div>
+    </nav>
 
     <div class="container">
         <h1 class="page-title">My Stories</h1>
+        <div class="writing-mode-legend">
+            <div class="legend-item">
+                <div class="legend-color manual"></div>
+                <span>Manual Writing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color dialogue"></div>
+                <span>Dialogue Based Writing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color feedback"></div>
+                <span>Feedback Based Writing</span>
+            </div>
+        </div>
         <div id="stories-container" class="stories-grid">
             <!-- Stories will be loaded here -->
         </div>
@@ -189,7 +336,10 @@
                     const container = document.getElementById('stories-container');
                     if (data.stories && data.stories.length > 0) {
                         container.innerHTML = data.stories.map(story => `
-                            <div class="story-card" onclick="window.location.href='/story/${story.id}'">
+                            <div class="story-card ${story.writing_mode}" onclick="window.location.href='/story/${story.id}'">
+                                <div class="writing-mode-badge ${story.writing_mode}">
+                                    ${getWritingModeLabel(story.writing_mode)}
+                                </div>
                                 <h3 class="story-title">${story.title || 'Untitled Story'}</h3>
                                 <div class="story-time">${new Date(story.time).toLocaleString()}</div>
                                 <div class="story-preview">${story.content}</div>
@@ -202,6 +352,15 @@
                 .catch(error => {
                     console.error('Error loading stories:', error);
                 });
+        }
+
+        function getWritingModeLabel(mode) {
+            const labels = {
+                'manual': 'Manual',
+                'dialogue': 'Dialogue',
+                'feedback': 'Feedback'
+            };
+            return labels[mode] || mode;
         }
 
         window.onload = loadStories;
