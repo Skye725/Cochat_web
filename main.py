@@ -10,7 +10,7 @@ import base64
 import io
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text, func, desc
-from datetime import datetime
+from datetime import datetime, date
 from datetime import timedelta
 import logging
 #from dateutil.parser import parse
@@ -64,14 +64,12 @@ login_manager.login_view = 'login'
 
 #数据库创建
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)  # 用户ID（主键）
-    username = db.Column(db.String(20), unique=True, nullable=False)  # 用户名
-    email = db.Column(db.String(120), unique=True, nullable=False)  # 邮箱
-    password = db.Column(db.String(128), nullable=False)  # 密码
-    gender = db.Column(db.String(10))  # 性别
-    age = db.Column(db.Integer)  # 年龄
-
-    # 定义与 Story 的关系：一个用户可以有多个故事
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+    gender = db.Column(db.String(10))
+    birth_date = db.Column(db.Date)  # 将 age 改为 birth_date
     stories = db.relationship('Story', backref='user', lazy=True)
 
     def __repr__(self):
@@ -99,7 +97,10 @@ class User(db.Model):
         return str(self.id)
     
 
-
+def calculate_age(birth_date):
+    today = date.today()
+    age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    return age
 
 
 @login_manager.user_loader
@@ -114,16 +115,18 @@ def signup():
         password = request.form.get('password')
         email = request.form.get('email')
         gender = request.form.get('gender')
-        age = request.form.get('age')
+        birth_date = request.form.get('birth_date')
         
-        # 验证年龄是否为有效数字
         try:
-            age = int(age)
-            if age < 1 or age > 120:
-                flash('Please enter a valid age between 1 and 120', 'warning')
+            birth_date = datetime.strptime(birth_date, '%Y-%m-%d').date()
+            # 验证年龄是否在合理范围内（例如：0-120岁）
+            today = date.today()
+            age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+            if age < 0 or age > 120:
+                flash('Please enter a valid birth date', 'warning')
                 return redirect(url_for('signup'))
         except ValueError:
-            flash('Please enter a valid age', 'warning')
+            flash('Please enter a valid birth date', 'warning')
             return redirect(url_for('signup'))
         
         # 验证性别是否为有效选项
@@ -140,7 +143,7 @@ def signup():
             username=username, 
             email=email,
             gender=gender,
-            age=age
+            birth_date=birth_date
         )
         new_user.set_password(password)
         db.session.add(new_user)
@@ -263,7 +266,7 @@ def load_profile():
         profile_data = {
             "username": user.username,
             "gender": user.gender,
-            "age": user.age
+            "birth_date": user.birth_date.strftime('%Y-%m-%d') if user.birth_date else None
         }
         return jsonify(profile_data)
     return jsonify({"error": "User not found"}), 404
@@ -277,7 +280,9 @@ def save_profile():
     
     if user:
         user.gender = data.get('gender')
-        user.age = data.get('age')
+        birth_date = data.get('birth_date')
+        if birth_date:
+            user.birth_date = datetime.strptime(birth_date, '%Y-%m-%d').date()
         
         db.session.commit()
         return jsonify({"success": True})
@@ -328,9 +333,9 @@ def save_story():
 @app.route('/storygenerate')
 @login_required
 def story_generate():
-    # Assuming the user is logged in and their ID is stored in the session
     user = User.query.get(current_user.id)
-    return render_template('storygenerate.html', username=user.username, gender=user.gender, age=user.age)
+    age = calculate_age(user.birth_date) if user.birth_date else None
+    return render_template('storygenerate.html', username=user.username, gender=user.gender, age=age)
 
 #获取参数
 # def get_dify_parameters():
@@ -360,7 +365,7 @@ def dify_chatbot_request(prompt):
     dify_api_url = "https://api.dify.ai/v1/chat-messages"
     
     headers = {
-        "Authorization": "Bearer xxxxxxx",
+        "Authorization": "Bearer xxxxxxxxxxx",
         "Content-Type": "application/json"
     }
     user = User.query.get(current_user.id)
@@ -375,7 +380,7 @@ def dify_chatbot_request(prompt):
 
 
     data = {
-        "inputs": {"username": user.username, "gender": str(user.gender), "age": str(user.age)},
+        "inputs": {"username": user.username, "gender": str(user.gender), "age": str(calculate_age(user.birth_date))},
         "query": prompt,
         "response_mode": "blocking",
         "conversation_id": current_conversation_id,
@@ -451,7 +456,7 @@ def story_write():
 
             # 调用 Dify API 获取反馈
             headers = {
-                "Authorization": "Bearer xxxxxxx",
+                "Authorization": "Bearer xxxxx",
                 "Content-Type": "application/json"
             }
             

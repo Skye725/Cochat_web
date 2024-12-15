@@ -33,49 +33,56 @@
 
         #navbar {
             background-color: white;
-            padding: 1rem 2rem;
+            padding: 0.7rem 1rem;
             box-shadow: 0 2px 15px rgba(0,0,0,0.05);
             position: sticky;
             top: 0;
             z-index: 1000;
+            width: 100%;
         }
 
         .nav-content {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 0 2rem;
+            padding: 0 1rem;
+            flex-wrap: nowrap;
+            gap: 2rem;
         }
 
         .nav-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 0.8rem;
+            flex-wrap: nowrap;
+            align-items: center;
         }
 
         .nav-links:first-child {
-            margin-right: auto;
-            padding-right: 2rem;
+            margin-right: 0;
+            padding-right: 0;
         }
 
         .nav-links:last-child {
-            margin-left: auto;
+            margin-left: 0;
             padding-left: 2rem;
-            border-left: 2px solid rgba(0, 0, 0, 0.1);
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .nav-links a {
             text-decoration: none;
             color: var(--text-color);
             font-weight: 500;
-            padding: 0.5rem 1rem;
+            font-size: 1.1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: var(--border-radius);
             transition: all 0.3s ease;
             position: relative;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
+            white-space: nowrap;
         }
 
         .nav-links a:hover {
@@ -120,32 +127,20 @@
             font-size: 1.1rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1200px) {
             .nav-content {
-                flex-direction: column;
+                max-width: 100%;
+                justify-content: space-between;
                 gap: 1rem;
-                padding: 0 1rem;
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .nav-links:first-child,
-            .nav-links:last-child {
-                margin: 0;
-                padding: 0;
-                border: none;
             }
 
             .nav-links a {
-                font-size: 0.9rem;
-                padding: 0.4rem 0.8rem;
-            }
-
-            .nav-icon {
                 font-size: 1rem;
+                padding: 0.3rem 0.6rem;
+            }
+            
+            .nav-links {
+                gap: 0.5rem;
             }
         }
 
@@ -478,6 +473,12 @@
             const textarea = storyCard.querySelector('textarea');
             const content = textarea.value;
 
+            // 弹出输入框请求用户输入标题
+            const title = await promptForTitle();
+            if (!title) {
+                return; // 如果用户取消或未输入标题，则终止保存
+            }
+
             try {
                 const response = await fetch('/save_story', {
                     method: 'POST',
@@ -485,7 +486,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        title: 'Generated Story',
+                        title: title,
                         content: content,
                         writing_mode: 'dialogue'
                     })
@@ -510,6 +511,69 @@
                 console.error('Error:', error);
                 alert('Failed to save story: ' + error.message);
             }
+        }
+
+        // 添加新函数用于获取标题
+        function promptForTitle() {
+            return new Promise((resolve) => {
+                // 创建模态框
+                const modalHtml = `
+                    <div id="titleModal" class="guide-modal" style="display: flex;">
+                        <div class="guide-content">
+                            <h2 class="guide-title">Enter Story Title</h2>
+                            <div style="margin: 20px 0;">
+                                <input type="text" id="storyTitleInput" 
+                                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+                                    placeholder="Enter your story title...">
+                            </div>
+                            <div class="guide-footer">
+                                <button id="cancelTitleBtn" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors mr-2">
+                                    Cancel
+                                </button>
+                                <button id="saveTitleBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // 添加模态框到页面
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+                const modal = document.getElementById('titleModal');
+                const input = document.getElementById('storyTitleInput');
+                const saveBtn = document.getElementById('saveTitleBtn');
+                const cancelBtn = document.getElementById('cancelTitleBtn');
+
+                // 处理保存按钮点击
+                saveBtn.onclick = () => {
+                    const title = input.value.trim();
+                    if (title) {
+                        modal.remove();
+                        resolve(title);
+                    } else {
+                        alert('Please enter a title for your story.');
+                    }
+                };
+
+                // 处理取消按钮点击
+                cancelBtn.onclick = () => {
+                    modal.remove();
+                    resolve(null);
+                };
+
+                // 处理点击模态框外部
+                modal.onclick = (event) => {
+                    if (event.target === modal) {
+                        modal.remove();
+                        resolve(null);
+                    }
+                };
+
+                // 聚焦输入框
+                input.focus();
+            });
         }
 
         // 添加新的函数

@@ -28,49 +28,56 @@
 
         #navbar {
             background-color: white;
-            padding: 1rem 2rem;
-            box-shadow: var(--box-shadow);
+            padding: 0.7rem 1rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
             position: sticky;
             top: 0;
             z-index: 1000;
+            width: 100%;
         }
 
         .nav-content {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 0 2rem;
+            padding: 0 1rem;
+            flex-wrap: nowrap;
+            gap: 2rem;
         }
 
         .nav-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 0.8rem;
+            flex-wrap: nowrap;
+            align-items: center;
         }
 
         .nav-links:first-child {
-            margin-right: auto;
-            padding-right: 2rem;
+            margin-right: 0;
+            padding-right: 0;
         }
 
         .nav-links:last-child {
-            margin-left: auto;
+            margin-left: 0;
             padding-left: 2rem;
-            border-left: 2px solid rgba(0, 0, 0, 0.1);
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .nav-links a {
-            position: relative;
             text-decoration: none;
             color: var(--text-color);
             font-weight: 500;
-            padding: 0.5rem 1rem;
+            font-size: 1.1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: var(--border-radius);
             transition: all 0.3s ease;
+            position: relative;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
+            white-space: nowrap;
         }
 
         .nav-links a:hover {
@@ -229,32 +236,20 @@
             opacity: 0.9;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1200px) {
             .nav-content {
-                flex-direction: column;
+                max-width: 100%;
+                justify-content: space-between;
                 gap: 1rem;
-                padding: 0 1rem;
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .nav-links:first-child,
-            .nav-links:last-child {
-                margin: 0;
-                padding: 0;
-                border: none;
             }
 
             .nav-links a {
-                font-size: 0.9rem;
-                padding: 0.4rem 0.8rem;
-            }
-
-            .nav-icon {
                 font-size: 1rem;
+                padding: 0.3rem 0.6rem;
+            }
+            
+            .nav-links {
+                gap: 0.5rem;
             }
         }
     </style>
@@ -314,8 +309,8 @@
                     <div class="info-value" id="gender-value"></div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Age:</div>
-                    <div class="info-value" id="age-value"></div>
+                    <div class="info-label">Date of Birth:</div>
+                    <div class="info-value" id="birth-date-value"></div>
                 </div>
             </div>
 
@@ -329,8 +324,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="age">Age:</label>
-                    <input type="number" id="age" name="age" required min="1" max="120">
+                    <label for="birth_date">Date of Birth:</label>
+                    <input type="date" id="birth_date" name="birth_date" required>
                 </div>
                 <button class="save-btn" onclick="saveProfile()">Save Changes</button>
             </div>
@@ -345,11 +340,11 @@
                 .then(data => {
                     document.getElementById('username-value').textContent = data.username;
                     document.getElementById('gender-value').textContent = data.gender || 'Not specified';
-                    document.getElementById('age-value').textContent = data.age || 'Not specified';
+                    document.getElementById('birth-date-value').textContent = data.birth_date || 'Not specified';
                     
                     // 设置表单的初始值
                     document.getElementById('gender').value = data.gender || 'male';
-                    document.getElementById('age').value = data.age || '';
+                    document.getElementById('birth_date').value = data.birth_date || '';
                 })
                 .catch(error => console.error('Error loading profile:', error));
         }
@@ -374,7 +369,7 @@
         // 保存个人信息
         async function saveProfile() {
             const gender = document.getElementById('gender').value;
-            const age = document.getElementById('age').value;
+            const birth_date = document.getElementById('birth_date').value;
 
             try {
                 const response = await fetch('/save_profile', {
@@ -384,7 +379,7 @@
                     },
                     body: JSON.stringify({
                         gender: gender,
-                        age: parseInt(age)
+                        birth_date: birth_date
                     })
                 });
 
