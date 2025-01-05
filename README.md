@@ -14,5 +14,4 @@ pip install -r requirements2.txt
 - Interface enhancement
 
   You can try using the following link:
- [ https://cochatweb-SkyeW4.replit.app]([https://cochatweb-SkyeW4.replit.app](https://storytellerai.space)
-)
+  [click here](https://storytellerai.space)
