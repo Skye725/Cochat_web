@@ -377,6 +377,35 @@
         updateTime();
         setInterval(updateTime, 1000);
 
+        // 保存内容到 sessionStorage
+        function saveToSessionStorage() {
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const storyData = {
+                title: title,
+                content: content,
+                lastUpdated: new Date().toISOString()
+            };
+            sessionStorage.setItem('freewriteData', JSON.stringify(storyData));
+        }
+
+        // 从 sessionStorage 加载内容
+        function loadFromSessionStorage() {
+            const savedData = sessionStorage.getItem('freewriteData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('title').value = data.title || '';
+                document.getElementById('content').value = data.content || '';
+            }
+        }
+
+        // 添加输入事件监听器
+        document.getElementById('title').addEventListener('input', saveToSessionStorage);
+        document.getElementById('content').addEventListener('input', saveToSessionStorage);
+
+        // 页面加载时恢复内容
+        window.addEventListener('load', loadFromSessionStorage);
+
         document.getElementById('save-button').addEventListener('click', async function() {
             const title = document.getElementById('title').value;
             const content = document.getElementById('content').value;
@@ -408,6 +437,9 @@
                 
                 if (response.ok) {
                     showMessage('Your story has been saved successfully!', true);
+                    // 清除 sessionStorage 中的数据
+                    sessionStorage.removeItem('freewriteData');
+                    // 清空输入框
                     document.getElementById('title').value = '';
                     document.getElementById('content').value = '';
                 } else {
@@ -428,6 +460,14 @@
                 statusMessage.style.display = 'none';
             }, 3000);
         }
+
+        // 添加页面卸载事件监听器
+        window.addEventListener('beforeunload', function(e) {
+            // 如果是刷新页面，则清除数据
+            if (e.currentTarget.performance.navigation.type === 1) {
+                sessionStorage.removeItem('freewriteData');
+            }
+        });
     </script>
 </body>
 </html>

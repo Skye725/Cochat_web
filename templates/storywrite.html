@@ -415,12 +415,42 @@
         }
     </script>    
     <script>
-        // 添加保存故事的事件监听器
+        // 保存内容到 sessionStorage
+        function saveToSessionStorage() {
+            const storyData = {
+                title: document.getElementById("story-title").value,
+                content: document.getElementById("story-input").value,
+                feedback: document.getElementById("feedback").innerText,
+                lastUpdated: new Date().toISOString()
+            };
+            sessionStorage.setItem('storywriteData', JSON.stringify(storyData));
+        }
+
+        // 从 sessionStorage 加载内容
+        function loadFromSessionStorage() {
+            const savedData = sessionStorage.getItem('storywriteData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById("story-title").value = data.title || '';
+                document.getElementById("story-input").value = data.content || '';
+                if (data.feedback && data.feedback !== 'Your feedback will appear here.') {
+                    document.getElementById("feedback").innerText = data.feedback;
+                }
+            }
+        }
+
+        // 添加输入事件监听器
+        document.getElementById("story-title").addEventListener('input', saveToSessionStorage);
+        document.getElementById("story-input").addEventListener('input', saveToSessionStorage);
+
+        // 页面加载时恢复内容
+        window.addEventListener('load', loadFromSessionStorage);
+
+        // 修改保存故事的事件监听器
         document.getElementById("save-story").addEventListener("click", async function() {
             const title = document.getElementById("story-title").value.trim();
             const content = document.getElementById("story-input").value.trim();
             
-            // 验证输入
             if (!title) {
                 alert("Please enter a title for your story.");
                 return;
@@ -447,15 +477,28 @@
                 
                 if (response.ok && result.success) {
                     alert('Story saved successfully!');
-                    // 可选：清空输入框
-                    // document.getElementById("story-title").value = '';
-                    // document.getElementById("story-input").value = '';
+                    // 清除 sessionStorage 中的数据
+                    sessionStorage.removeItem('storywriteData');
+                    // 清空输入框
+                    document.getElementById("story-title").value = '';
+                    document.getElementById("story-input").value = '';
+                    document.getElementById("feedback").innerText = 'Your feedback will appear here.';
+                    // 重置星星评分
+                    document.querySelectorAll('.star').forEach(star => star.classList.remove('active'));
                 } else {
                     throw new Error(result.error || 'Failed to save story');
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('Failed to save story: ' + error.message);
+            }
+        });
+
+        // 添加页面卸载事件监听器
+        window.addEventListener('beforeunload', function(e) {
+            // 如果是刷新页面，则清除数据
+            if (e.currentTarget.performance.navigation.type === 1) {
+                sessionStorage.removeItem('storywriteData');
             }
         });
     </script>
