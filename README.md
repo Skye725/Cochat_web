@@ -1,4 +1,5 @@
-A web platform for integrating Dify chatbots, including registration and login features.      
+A web platform for supporting users to tell their personal stories. 
+integrated Dify chatbots, including registration and login features.      
 Run with python3.9        
 use conda to create a new environment:             
 ```
