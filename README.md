@@ -11,13 +11,7 @@ pip install -r requirements2.txt
 **Chatbot2:** Provides feedback on user-written stories.
 
 **Features to be added:**  
-- Story card displayed on profile  
-- Story tag categorization  
-- add story titles  
 - Interface enhancement
-- story display methods
-- 
 
   You can try using the following link:
- [ https://cochatweb-SkyeW4.replit.app](https://cochatweb-SkyeW4.replit.app
-)
+  [click here](https://storytellerai.space)
