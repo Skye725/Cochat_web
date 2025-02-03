@@ -1,5 +1,5 @@
 A web platform for supporting users to tell their personal stories.    
-integrated Dify chatbots, including registration and login features.  
+integrated Dify chatbots  development platform [click here](https://dify.ai/), including registration and login features.  
 new features： inspiration story sharing    
 Run with python3.9        
 use conda to create a new environment:             
