@@ -252,15 +252,122 @@
                 gap: 0.5rem;
             }
         }
+
+        /* 移动端菜单按钮样式 */
+        .menu-button {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1001;
+            cursor: pointer;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .menu-button i {
+            margin-right: 8px;
+        }
+
+        /* 移动端样式 */
+        @media (max-width: 768px) {
+            /* 显示菜单按钮 */
+            .menu-button {
+                display: flex;
+                align-items: center;
+            }
+
+            /* 导航栏样式 */
+            #navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.9);
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                padding: 0;
+            }
+
+            #navbar.show {
+                transform: translateX(0);
+            }
+
+            .nav-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 80%;
+                height: 100%;
+                background-color: white;
+                padding: 4rem 1rem 1rem;
+                flex-direction: column;
+                overflow-y: auto;
+                margin: 0;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+                padding: 0;
+                margin: 0;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+            }
+
+            .nav-links:last-child {
+                border-left: none;
+                padding-left: 0;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links a {
+                width: 100%;
+                padding: 0.8rem;
+                font-size: 1rem;
+                justify-content: flex-start;
+            }
+
+            /* 内容区域调整 */
+            .container {
+                margin-top: 60px;
+                padding: 1rem;
+            }
+
+            /* 确保内容不被菜单按钮遮挡 */
+            body {
+                padding-top: 50px;
+            }
+        }
     </style>
 </head>
 <body>
+    <button class="menu-button" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+        MENU
+    </button>
+
     <nav id="navbar">
         <div class="nav-content">
             <div class="nav-links">
                 <a href="/index_login">
                     <i class="nav-icon fas fa-home"></i>
                     Home
+                </a>
+                <a href="/inspiration">
+                    <i class="nav-icon fas fa-lightbulb"></i>
+                    Inspiration
                 </a>
                 <a href="/my_stories">
                     <i class="nav-icon fas fa-book"></i>
@@ -398,6 +505,35 @@
 
         // 页面加载时获取个人信息
         window.onload = loadProfile;
+
+        const navbar = document.getElementById('navbar');
+
+        function toggleMenu() {
+            navbar.classList.toggle('show');
+
+            // 切换背景滚动
+            if (navbar.classList.contains('show')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // 点击导航链接时关闭菜单
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // 点击菜单外部区域时关闭菜单
+        navbar.addEventListener('click', (e) => {
+            if (e.target === navbar) {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
     </script>
 </body>
 </html>

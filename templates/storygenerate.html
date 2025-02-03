@@ -138,7 +138,7 @@
                 font-size: 1rem;
                 padding: 0.3rem 0.6rem;
             }
-            
+
             .nav-links {
                 gap: 0.5rem;
             }
@@ -189,15 +189,279 @@
             text-align: center;
             margin-top: 1.5rem;
         }
+
+        /* 基础响应式设置 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem !important;
+                margin-top: 0.5rem !important;
+            }
+
+            /* 导航栏调整 */
+            .nav-content {
+                flex-direction: column;
+                padding: 0.5rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.3rem;
+                width: 100%;
+            }
+
+            .nav-links:last-child {
+                padding-left: 0;
+                border-left: none;
+                margin-top: 0.5rem;
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+                padding: 0.3rem 0.5rem;
+                width: calc(50% - 0.5rem); /* 每行两个按钮 */
+                justify-content: center;
+            }
+
+            /* 聊天界面调整 */
+            .message-container {
+                height: calc(100vh - 280px) !important;
+            }
+
+            /* 消息气泡调整 */
+            .max-w-[80%] {
+                max-width: 90% !important;
+            }
+
+            /* 输入区域调整 */
+            .p-4 {
+                padding: 0.75rem !important;
+            }
+
+            #userInput {
+                font-size: 1rem;
+                padding: 0.5rem;
+            }
+
+            /* 警告提示框调整 */
+            .bg-yellow-50 {
+                padding: 0.75rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+
+            .text-sm {
+                font-size: 0.8rem !important;
+            }
+
+            /* 故事编辑区域调整 */
+            .story-card textarea {
+                min-height: 150px;
+                font-size: 0.9rem;
+            }
+
+            .story-card button {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+
+            /* 模态框调整 */
+            .guide-content {
+                width: 90%;
+                margin: 5% auto;
+                padding: 1rem;
+            }
+
+            .guide-title {
+                font-size: 1.2rem;
+            }
+
+            .guide-step {
+                padding: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+        }
+
+        /* 超小屏幕设备适配 */
+        @media (max-width: 480px) {
+            .nav-links a {
+                width: 100%; /* 每行一个按钮 */
+                margin-bottom: 0.2rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .message-container {
+                height: calc(100vh - 320px) !important;
+            }
+
+            #userInput {
+                font-size: 0.9rem;
+            }
+
+            .button-group button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* 确保内容不会被键盘遮挡 */
+        @media (max-height: 600px) {
+            .message-container {
+                height: calc(100vh - 200px) !important;
+            }
+        }
+
+        /* 优化触摸体验 */
+        @media (hover: none) {
+            .nav-links a,
+            button,
+            .story-card button {
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            input,
+            textarea {
+                font-size: 16px !important; /* 防止 iOS 自动缩放 */
+            }
+        }
+
+        /* 移动端菜单按钮样式 */
+        .menu-button {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1001;
+            cursor: pointer;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .menu-button i {
+            margin-right: 8px;
+        }
+
+        /* 移动端导航栏样式 */
+        @media (max-width: 768px) {
+            .menu-button {
+                display: flex;
+                align-items: center;
+            }
+
+            #navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.9);
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 1000;
+            }
+
+            #navbar.show {
+                transform: translateX(0);
+            }
+
+            .nav-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 80%;
+                height: 100%;
+                background-color: white;
+                padding: 4rem 1rem 1rem;
+                flex-direction: column;
+                overflow-y: auto;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+            }
+
+            .nav-links:last-child {
+                border-left: none;
+                padding-left: 0;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links a {
+                width: 100%;
+                padding: 0.8rem;
+                font-size: 1rem;
+                border-radius: 8px;
+                transition: all 0.2s ease;
+            }
+
+            .nav-links a:hover {
+                background-color: rgba(74, 144, 226, 0.1);
+                padding-left: 1.2rem;
+            }
+
+            /* 关闭按钮 */
+            .close-menu {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: none;
+                border: none;
+                color: var(--text-color);
+                font-size: 1.5rem;
+                cursor: pointer;
+                z-index: 1002;
+                width: 35px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                transition: all 0.3s ease;
+            }
+
+            .close-menu:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+
+            /* 调整主容器边距 */
+            .container {
+                padding-top: 60px !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
+    <button class="menu-button" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+        MENU
+    </button>
+
     <nav id="navbar">
         <div class="nav-content">
+            <button class="close-menu" onclick="toggleMenu()">
+                <i class="fas fa-times"></i>
+            </button>
             <div class="nav-links">
                 <a href="/index_login">
                     <i class="nav-icon fas fa-home"></i>
                     Home
+                </a>
+                <a href="/inspiration">
+                    <i class="nav-icon fas fa-lightbulb"></i>
+                    Inspiration
                 </a>
                 <a href="/my_stories">
                     <i class="nav-icon fas fa-book"></i>
@@ -289,7 +553,7 @@
     <div id="guideModal" class="guide-modal">
         <div class="guide-content">
             <h2 class="guide-title">How to Use the Chatbot</h2>
-            
+
             <div class="guide-step">
                 <div class="guide-step-title">1. Start Chatting</div>
                 <p>Talk to the chatbot.</p>
@@ -326,10 +590,10 @@
         function addMessage(content, isUser = false) {
             const messageDiv = document.createElement('div');
             messageDiv.className = 'flex items-start space-x-4 ' + (isUser ? 'justify-end' : '');
-            
+
             // 检查是否包含特定文本
             const isStory = !isUser && content.includes("I summarized the previous chat between us and generated a story");
-            
+
             const iconAndMessage = `
                 ${isUser ? '' : `
                     <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -360,7 +624,7 @@
                     ` : ''}
                 </div>
             `;
-            
+
             messageDiv.innerHTML = iconAndMessage;
             messageContainer.querySelector('.space-y-4').appendChild(messageDiv);
             messageContainer.scrollTop = messageContainer.scrollHeight;
@@ -411,10 +675,10 @@
                 }
 
                 const data = await response.json();
-                
+
                 // 移除输入指示器
                 typingIndicator.remove();
-                
+
                 // 添加 AI 回复
                 // 从返回的数据中提取回复文本
                 const aiResponse = data.fulfillment_response.messages[0].text.text[0];
@@ -430,7 +694,7 @@
         // 添加开始生成故事的函数
         async function startGenerating() {
             const message = "Start generating the story";
-            
+
             // 添加用户消息
             addMessage(message, true);
 
@@ -452,10 +716,10 @@
                 }
 
                 const data = await response.json();
-                
+
                 // 移除输入指示器
                 typingIndicator.remove();
-                
+
                 // 添加 AI 回复
                 const aiResponse = data.fulfillment_response.messages[0].text.text[0];
                 addMessage(aiResponse);
@@ -473,12 +737,12 @@
             const storyContent = storyCard.querySelector('.story-content');
             const storyText = storyCard.querySelector('.story-text');
             const textarea = storyCard.querySelector('textarea');
-            
+
             if (storyContent.classList.contains('hidden')) {
                 storyContent.classList.remove('hidden');
                 storyText.classList.add('hidden');
                 button.textContent = 'Hide Editor';
-                
+
                 // 检查并处理文本内容
                 let content = textarea.value;
                 const prefix = "I summarized the previous chat between us and generated a story:";
@@ -627,6 +891,52 @@
                 closeGuide();
             }
         }
+
+        let lastScrollTop = 0;
+        const menuButton = document.querySelector('.menu-button');
+        const navbar = document.getElementById('navbar');
+
+        // 监听滚动事件
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            // 向下滚动时隐藏菜单按钮，向上滚动时显示
+            if (scrollTop > lastScrollTop) {
+                menuButton.style.transform = 'translateY(100px)';
+            } else {
+                menuButton.style.transform = 'translateY(0)';
+            }
+
+            lastScrollTop = scrollTop;
+        });
+
+        // 切换菜单显示/隐藏
+        function toggleMenu() {
+            navbar.classList.toggle('show');
+
+            // 如果菜单展开，禁止背景滚动
+            if (navbar.classList.contains('show')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // 点击导航链接时关闭菜单
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // 点击菜单外部区域时关闭菜单
+        navbar.addEventListener('click', (e) => {
+            if (e.target === navbar) {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
     </script>
 </body>
 </html>

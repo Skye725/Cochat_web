@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Record Your Story</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -132,7 +134,7 @@
                 font-size: 1rem;
                 padding: 0.3rem 0.6rem;
             }
-            
+
             .nav-links {
                 gap: 0.5rem;
             }
@@ -291,11 +293,101 @@
             }
         }
 
+        /* 移动端菜单按钮样式 */
+        .menu-button {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1001;
+            cursor: pointer;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .menu-button i {
+            margin-right: 8px;
+        }
+
+        /* 移动端样式 */
         @media (max-width: 768px) {
-            .welcome-message {
-                padding: 1.5rem;
+            /* 显示菜单按钮 */
+            .menu-button {
+                display: flex;
+                align-items: center;
+            }
+
+            /* 导航栏样式 */
+            #navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.9);
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                padding: 0;
+            }
+
+            #navbar.show {
+                transform: translateX(0);
+            }
+
+            .nav-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 80%;
+                height: 100%;
+                background-color: white;
+                padding: 4rem 1rem 1rem;
+                flex-direction: column;
+                overflow-y: auto;
+                margin: 0;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+                padding: 0;
+                margin: 0;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+            }
+
+            .nav-links:last-child {
+                border-left: none;
+                padding-left: 0;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links a {
+                width: 100%;
+                padding: 0.8rem;
                 font-size: 1rem;
+                justify-content: flex-start;
+            }
+
+            /* 内容区域调整 */
+            .main-content {
+                margin-top: 60px;
+                padding: 1rem;
+            }
+
+            .welcome-message {
                 margin: 1rem;
+                padding: 1.5rem;
             }
 
             .welcome-message h1 {
@@ -311,62 +403,29 @@
                 gap: 1rem;
             }
 
-            .nav-links a {
-                font-size: 0.9rem;
-                padding: 0.4rem 0.8rem;
+            /* 确保内容不被菜单按钮遮挡 */
+            body {
+                padding-top: 50px;
             }
-
-            .nav-icon {
-                font-size: 1rem;
-            }
-
-            .nav-content {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 0 1rem;
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .nav-links:first-child,
-            .nav-links:last-child {
-                margin: 0;
-                padding: 0;
-                border: none;
-            }
-        }
-
-        .nav-links .writing-link {
-            background-color: rgba(74, 144, 226, 0.1);
-            border: 1px solid rgba(74, 144, 226, 0.2);
-        }
-
-        .nav-links .writing-link:hover {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .nav-links .writing-link.active {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .nav-icon {
-            font-size: 1.1rem;
         }
     </style>
 </head>
 
 <body>
+    <button class="menu-button" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+        MENU
+    </button>
     <nav id="navbar">
         <div class="nav-content">
             <div class="nav-links">
                 <a href="/index_login" class="active">
                     <i class="nav-icon fas fa-home"></i>
                     Home
+                </a>
+                <a href="/inspiration">
+                    <i class="nav-icon fas fa-lightbulb"></i>
+                    Inspiration
                 </a>
                 <a href="/my_stories">
                     <i class="nav-icon fas fa-book"></i>
@@ -403,9 +462,9 @@
             <h1>Welcome to Your Story Space</h1>
             <div class="message-container">
                 <p>Everyone carries <span class="highlight-text">unique stories</span> within them—stories that shape who we are and connect us with others.</p>
-                
+
                 <p>Today, you are invited to share your story in a safe and open environment. Whether it's a memorable experience, a journey of growth, or a meaningful moment, any of these can be the starting point of your narrative.</p>
-                
+
                 <p>Sharing isn't just about expression; it's an opportunity for <span class="highlight-text">self-healing</span> and connecting with those who listen. Take your time, feel free to speak from the heart—<span class="highlight-text">this is your story</span>.</p>
                 <!-- <p>Take your time, feel free to speak from the heart—<span class="highlight-text">this is your story</span>.</p> -->
             </div>
@@ -431,5 +490,37 @@
             </div>
         </div>
     </div>
+
+    <!-- 在底部添加 JavaScript -->
+    <script>
+        const navbar = document.getElementById('navbar');
+
+        function toggleMenu() {
+            navbar.classList.toggle('show');
+
+            // 切换背景滚动
+            if (navbar.classList.contains('show')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // 点击导航链接时关闭菜单
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // 点击菜单外部区域时关闭菜单
+        navbar.addEventListener('click', (e) => {
+            if (e.target === navbar) {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
 </body>
 </html>

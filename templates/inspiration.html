@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Inspiration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 继承主页的基础样式 */
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --nav-height: 70px;
+            --transition: all 0.3s ease;
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 导航栏样式 */
+        #navbar {
+            background-color: white;
+            padding: 0.7rem 1rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 1rem;
+            flex-wrap: nowrap;
+            gap: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+
+        .nav-links:first-child {
+            margin-right: 0;
+            padding-right: 0;
+        }
+
+        .nav-links:last-child {
+            margin-left: 0;
+            padding-left: 2rem;
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 1.1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-links a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .writing-link {
+            background-color: rgba(74, 144, 226, 0.1);
+            border: 1px solid rgba(74, 144, 226, 0.2);
+        }
+
+        /* 问题气泡样式 */
+        .questions-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            position: relative;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .question-bubble {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            padding: 1.2rem 1.8rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: bubbleIn 0.5s ease-out;
+            width: fit-content;
+            max-width: 90%;
+            margin-left: 3.5rem;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: bubbleIn 0.5s ease-out forwards;
+        }
+
+        /* 调整左右列的间距 */
+        .column:first-child .question-bubble {
+            margin-left: 3.5rem;
+            margin-right: auto;
+        }
+
+        .column:last-child .question-bubble {
+            margin-left: 3.5rem;
+            margin-right: 1rem;
+        }
+
+        .question-bubble:nth-child(odd) {
+            background-color: #f8f9fa;
+            margin-left: 5rem;
+        }
+
+        .question-bubble:nth-child(even) {
+            background-color: white;
+            margin-left: 4rem;
+        }
+
+        .question-bubble::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-right: 12px solid currentColor;
+            color: inherit;
+        }
+
+        .question-bubble:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .question-bubble:hover::before {
+            border-right-color: var(--primary-color);
+        }
+
+        .question-bubble:hover .avatar {
+            background-color: white;
+            color: var(--primary-color);
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            position: absolute;
+            left: -3.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin: 0;
+            color: inherit;
+        }
+
+        @keyframes bubbleIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* 弹出框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .writing-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .writing-option {
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .writing-option:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .writing-option i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .writing-option-title {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .writing-option-description {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .writing-option:hover .writing-option-description {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-button {
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .start-writing {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .start-writing:hover {
+            background: #357abd;
+        }
+
+        .cancel {
+            background: #e0e0e0;
+            color: var(--secondary-color);
+        }
+
+        .cancel:hover {
+            background: #d0d0d0;
+        }
+
+        /* 页面标题样式 */
+        .page-header {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+            background: white;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .page-title {
+            color: var(--secondary-color);
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .page-description {
+            max-width: 800px;
+            margin: 0 auto;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .questions-container {
+                grid-template-columns: 1fr;
+                max-width: 800px;
+            }
+
+            .column:last-child .question-bubble {
+                margin-left: 3.5rem;
+                margin-right: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-content {
+                display: none;
+            }
+
+            .menu-button {
+                display: flex;
+            }
+
+            .questions-container {
+                padding: 0.5rem;
+            }
+
+            .question-bubble {
+                margin-left: 2.5rem;
+                padding: 0.8rem 1rem;
+                max-width: calc(100% - 3rem);
+            }
+
+            .column:first-child .question-bubble,
+            .column:last-child .question-bubble {
+                margin-left: 2.5rem;
+                margin-right: 0.5rem;
+            }
+
+            .avatar {
+                width: 32px;
+                height: 32px;
+                left: -2.5rem;
+                font-size: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .writing-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .menu-button {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            z-index: 1001;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-button" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+        MENU
+    </button>
+    
+    <nav id="navbar">
+        <div class="nav-content">
+            <div class="nav-links">
+                <a href="/index_login">
+                    <i class="nav-icon fas fa-home"></i>
+                    Home
+                </a>
+                <a href="/inspiration" class="active">
+                    <i class="nav-icon fas fa-lightbulb"></i>
+                    Inspiration
+                </a>
+                <a href="/my_stories">
+                    <i class="nav-icon fas fa-book"></i>
+                    My Stories
+                </a>
+                <a href="/freewrite" class="writing-link">
+                    <i class="nav-icon fas fa-pen"></i>
+                    Manual Writing
+                </a>
+                <a href="/storygenerate" class="writing-link">
+                    <i class="nav-icon fas fa-robot"></i>
+                    Dialogue Based Writing
+                </a>
+                <a href="/storywrite" class="writing-link">
+                    <i class="nav-icon fas fa-compass"></i>
+                    Feedback Based Writing
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/profile">
+                    <i class="nav-icon fas fa-user"></i>
+                    Profile
+                </a>
+                <a href="/logout">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    Sign Out
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1 class="page-title">Find Your Story Inspiration</h1>
+        <p class="page-description">
+            Let these prompts guide you to discover and share your experiences. Each question is a doorway to your unique story. 
+        </p>
+    </div>
+
+    <div class="questions-container">
+        <!-- 问题气泡将通过JavaScript动态生成 -->
+    </div>
+
+    <!-- 弹出框 -->
+    <div class="modal" id="writeModal">
+        <div class="modal-content">
+            <p style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--secondary-color);" id="selectedQuestion"></p>
+            <h2 style="font-size: 1rem; margin-bottom: 1rem; color: #666;">Choose Your Writing Style</h2>
+            <div class="writing-options">
+                <div class="writing-option" onclick="startWriting('freewrite')">
+                    <i class="fas fa-pen"></i>
+                    <div class="writing-option-title">Manual Writing</div>
+                    <div class="writing-option-description">Write freely with your own words</div>
+                </div>
+                <div class="writing-option" onclick="startWriting('storygenerate')">
+                    <i class="fas fa-robot"></i>
+                    <div class="writing-option-title">Dialogue Based</div>
+                    <div class="writing-option-description">Write with AI conversation</div>
+                </div>
+                <div class="writing-option" onclick="startWriting('storywrite')">
+                    <i class="fas fa-compass"></i>
+                    <div class="writing-option-title">Feedback Based</div>
+                    <div class="writing-option-description">Write with AI feedback</div>
+                </div>
+            </div>
+            <button class="modal-button cancel" onclick="closeModal()" style="margin-top: 1.5rem;">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // 问题列表
+        const questions = [
+            "What are you thinking about right now?",
+            "What has been your strongest feeling today (or in the past few days)?",
+            "Has there been a small event recently that left a deep impression on you?",
+            "What is your biggest concern at the moment?",
+            "Have you encountered any difficulties or challenges recently?",
+            "What is something you accomplished in the past week or month that made you feel proud?",
+            "Have you made an important decision recently?",
+            "Was there a moment that gave you a new understanding of yourself or others?",
+            "Has someone's words or actions recently left a deep impression on you?",
+            "Have you helped someone recently, or has someone helped you?",
+            "Have you noticed any recent changes in yourself?",
+            "Have you done anything consciously to improve yourself?",
+            "Has anything recently made you reflect on your past self?",
+            "What are you looking forward to in the coming days?",
+            "What is your most vivid childhood memory? How did it affect you?",
+            "Was there a moment when you suddenly realized you had grown up?",
+            "What events in your life have had a profound impact on you?",
+            "Have you ever had to make a difficult decision?",
+            "What challenges or difficulties have you faced? How did you overcome them?",
+            "Has any experience changed your thoughts or values?",
+            "Who has had the greatest influence on your life?",
+            "Do you have any special memories with your family or friends?",
+            "What is the most important value to you?",
+            "Has there been a moment when your beliefs were challenged?",
+            "What was your childhood dream?",
+            "What is your biggest goal now?",
+            "What failures have you experienced?",
+            "If you could go back in time, would you make a different choice?",
+            "Do you have any regrets?",
+            "When do you feel the happiest?",
+            "Who or what are you most grateful for in your life?"
+        ];
+
+        // 修改生成问题气泡的代码
+        const questionsContainer = document.querySelector('.questions-container');
+        
+        // 创建两列
+        const leftColumn = document.createElement('div');
+        leftColumn.className = 'column';
+        const rightColumn = document.createElement('div');
+        rightColumn.className = 'column';
+        
+        questionsContainer.appendChild(leftColumn);
+        questionsContainer.appendChild(rightColumn);
+
+        questions.forEach((question, index) => {
+            const delay = index * 100;
+            const bubble = document.createElement('div');
+            bubble.className = 'question-bubble';
+            bubble.style.animationDelay = `${delay}ms`;
+            
+            // 根据问题长度设置不同的最大宽度
+            const questionLength = question.length;
+            if (questionLength < 50) {
+                bubble.style.maxWidth = '70%';
+            } else if (questionLength < 80) {
+                bubble.style.maxWidth = '80%';
+            } else {
+                bubble.style.maxWidth = '90%';
+            }
+            
+            bubble.innerHTML = `
+                <div class="avatar">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <p class="question-text">${question}</p>
+            `;
+            
+            bubble.onclick = () => showModal(question);
+            
+            // 将气泡添加到左右列中
+            if (index % 2 === 0) {
+                leftColumn.appendChild(bubble);
+            } else {
+                rightColumn.appendChild(bubble);
+            }
+        });
+
+        // 显示弹出框
+        function showModal(question) {
+            const modal = document.getElementById('writeModal');
+            const selectedQuestion = document.getElementById('selectedQuestion');
+            selectedQuestion.textContent = question;
+            modal.style.display = 'flex';
+        }
+
+        // 关闭弹出框
+        function closeModal() {
+            const modal = document.getElementById('writeModal');
+            modal.style.display = 'none';
+        }
+
+        // 开始写作
+        function startWriting(mode) {
+            // 获取选中的问题
+            const selectedQuestion = document.getElementById('selectedQuestion').textContent;
+            
+            // 将问题作为参数传递给写作页面
+            window.location.href = `/${mode}?question=${encodeURIComponent(selectedQuestion)}`;
+        }
+
+        // 移动端菜单
+        const navbar = document.getElementById('navbar');
+        function toggleMenu() {
+            navbar.classList.toggle('show');
+            if (navbar.classList.contains('show')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+        });
+
+        navbar.addEventListener('click', (e) => {
+            if (e.target === navbar) {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+</body>
+</html> 

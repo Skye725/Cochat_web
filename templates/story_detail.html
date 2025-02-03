@@ -288,6 +288,17 @@
             background-color: #6c757d;
             color: white;
         }
+
+        .story-status-container {
+            margin: 1rem 0;
+        }
+        
+        .story-status-container select {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
@@ -297,6 +308,10 @@
                 <a href="/index_login">
                     <i class="nav-icon fas fa-home"></i>
                     Home
+                </a>
+                <a href="/inspiration">
+                    <i class="nav-icon fas fa-lightbulb"></i>
+                    Inspiration
                 </a>
                 <a href="/my_stories" class="active">
                     <i class="nav-icon fas fa-book"></i>
@@ -333,6 +348,15 @@
             <div class="story-header">
                 <h1 class="story-title" id="story-title"></h1>
                 <div class="story-time" id="story-time"></div>
+                <div class="story-status-container">
+                    <label for="story-status">Story Status:</label>
+                    <select id="story-status" class="form-select">
+                        <option value="Visible to Researchers">Visible to Researchers</option>
+                        <option value="Private">Private</option>
+                        <option value="Anonymous Sharing">Anonymous Sharing</option>
+                        <option value="Public Sharing">Public Sharing</option>
+                    </select>
+                </div>
             </div>
             <div class="story-content" id="story-content"></div>
             <textarea id="story-editor"></textarea>
@@ -367,6 +391,7 @@
                     document.getElementById('story-time').textContent = new Date(story.time).toLocaleString();
                     document.getElementById('story-content').textContent = story.content;
                     document.getElementById('story-editor').value = story.content;
+                    document.getElementById('story-status').value = story.story_status;
                 })
                 .catch(error => console.error('Error loading story:', error));
         }
@@ -451,6 +476,26 @@
         document.getElementById('edit-btn').addEventListener('click', toggleEdit);
         document.getElementById('save-btn').addEventListener('click', saveStory);
         document.getElementById('delete-btn').addEventListener('click', deleteStory);
+
+        document.getElementById('story-status').addEventListener('change', async function() {
+            const newStatus = this.value;
+            try {
+                const response = await fetch(`/update_story/${storyId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        content: document.getElementById('story-content').textContent,
+                        story_status: newStatus 
+                    })
+                });
+                if (!response.ok) throw new Error('Failed to update story status');
+            } catch (error) {
+                console.error('Error updating story status:', error);
+                alert('Failed to update story status');
+            }
+        });
 
         window.onload = loadStory;
     </script>

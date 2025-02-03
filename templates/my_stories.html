@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Stories</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -159,6 +159,7 @@
 
         .story-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
         }
 
         .story-card.manual {
@@ -171,6 +172,18 @@
 
         .story-card.feedback {
             border-left-color: #FF9800;  /* 橙色代表反馈式写作 */
+        }
+
+        .story-card.status-private {
+            background: linear-gradient(135deg, #fff 0%, #E6E6FA 100%);
+        }
+
+        .story-card.status-anonymous {
+            background: linear-gradient(135deg, #fff 0%, #FFE4E1 100%);
+        }
+
+        .story-card.status-public {
+            background: linear-gradient(135deg, #fff 0%, #FFE5E5 100%);
         }
 
         .writing-mode-badge {
@@ -274,6 +287,125 @@
                 gap: 0.5rem;
             }
         }
+
+        /* 基础响应式设置 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+                margin: 1rem auto;
+            }
+
+            /* 导航栏调整 */
+            .nav-content {
+                flex-direction: column;
+                padding: 0.5rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.3rem;
+                width: 100%;
+            }
+
+            .nav-links:last-child {
+                padding-left: 0;
+                border-left: none;
+                margin-top: 0.5rem;
+            }
+
+            .nav-links a {
+                font-size: 0.9rem;
+                padding: 0.3rem 0.5rem;
+                width: calc(50% - 0.5rem);
+                justify-content: center;
+            }
+
+            /* 故事卡片调整 */
+            .stories-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .story-card {
+                padding: 1rem;
+            }
+
+            .story-title {
+                font-size: 1.1rem;
+            }
+
+            .story-preview {
+                font-size: 0.9rem;
+                -webkit-line-clamp: 2;
+            }
+
+            .writing-mode-badge {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+            }
+
+            /* 图例调整 */
+            .writing-mode-legend {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+            }
+
+            .legend-item {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* 超小屏幕设备适配 */
+        @media (max-width: 480px) {
+            .nav-links a {
+                width: 100%;
+                margin-bottom: 0.2rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .writing-mode-legend {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* 优化触摸体验 */
+        @media (hover: none) {
+            .nav-links a,
+            .story-card {
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
+            }
+        }
+
+        /* 添加状态标记样式 */
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+        }
+
+        .status-private {
+            background-color: #E6E6FA;  /* 浅紫色 */
+        }
+
+        .status-anonymous {
+            background-color: #FFE4E1;  /* 淡粉色 */
+        }
+
+        .status-public {
+            background-color: #FF0000;  /* 大红色 */
+        }
     </style>
 </head>
 <body>
@@ -283,6 +415,10 @@
                 <a href="/index_login">
                     <i class="nav-icon fas fa-home"></i>
                     Home
+                </a>
+                <a href="/inspiration">
+                    <i class="nav-icon fas fa-lightbulb"></i>
+                    Inspiration
                 </a>
                 <a href="/my_stories" class="active">
                     <i class="nav-icon fas fa-book"></i>
@@ -343,7 +479,8 @@
                     const container = document.getElementById('stories-container');
                     if (data.stories && data.stories.length > 0) {
                         container.innerHTML = data.stories.map(story => `
-                            <div class="story-card ${story.writing_mode}" onclick="window.location.href='/story/${story.id}'">
+                            <div class="story-card ${story.writing_mode} ${getStatusClass(story.story_status)}" onclick="window.location.href='/story/${story.id}'">
+                                ${getStatusIndicator(story.story_status)}
                                 <div class="writing-mode-badge ${story.writing_mode}">
                                     ${getWritingModeLabel(story.writing_mode)}
                                 </div>
@@ -358,6 +495,8 @@
                 })
                 .catch(error => {
                     console.error('Error loading stories:', error);
+                    document.getElementById('stories-container').innerHTML = 
+                        `<div class="no-stories">Error loading stories: ${error.message}</div>`;
                 });
         }
 
@@ -368,6 +507,32 @@
                 'feedback': 'Feedback'
             };
             return labels[mode] || mode;
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Private':
+                    return 'status-private';
+                case 'Anonymous Sharing':
+                    return 'status-anonymous';
+                case 'Public Sharing':
+                    return 'status-public';
+                default:
+                    return '';
+            }
+        }
+
+        function getStatusIndicator(status) {
+            switch(status) {
+                case 'Private':
+                    return '<div class="status-indicator status-private"></div>';
+                case 'Anonymous Sharing':
+                    return '<div class="status-indicator status-anonymous"></div>';
+                case 'Public Sharing':
+                    return '<div class="status-indicator status-public"></div>';
+                default:
+                    return '';
+            }
         }
 
         window.onload = loadStories;

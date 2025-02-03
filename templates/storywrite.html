@@ -275,6 +275,177 @@
         .star.active {
             color: #FFD700;
         }
+
+        /* 基础响应式设置 */
+        @media (max-width: 768px) {
+            #content {
+                flex-direction: column;
+                padding: 0.5rem;
+            }
+
+            #input-section, #feedback-section {
+                width: 100%;
+                margin-bottom: 1rem;
+                padding: 1rem;
+            }
+
+            #story-input {
+                height: 250px;
+                font-size: 1rem;
+                padding: 0.75rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            #get-feedback, #save-story {
+                width: 100%;
+                padding: 0.75rem;
+                font-size: 1rem;
+            }
+
+            .stars-container {
+                justify-content: center;
+                margin: 1rem 0;
+            }
+
+            .star {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* 键盘弹出时的调整 */
+        @media (max-height: 600px) {
+            #story-input {
+                height: 150px;
+            }
+        }
+
+        /* 优化触摸体验 */
+        @media (hover: none) {
+            input, textarea, button {
+                font-size: 16px !important;
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
+            }
+        }
+        /* 移动端菜单按钮样式 */
+        .menu-button {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1001;
+            cursor: pointer;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .menu-button i {
+            margin-right: 8px;
+        }
+
+        /* 移动端样式 */
+        @media (max-width: 768px) {
+            /* 显示菜单按钮 */
+            .menu-button {
+                display: flex;
+                align-items: center;
+            }
+
+            /* 导航栏样式 */
+            #navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.9);
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                padding: 0;
+            }
+
+            #navbar.show {
+                transform: translateX(0);
+            }
+
+            .nav-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 80%;
+                height: 100%;
+                background-color: white;
+                padding: 4rem 1rem 1rem;
+                flex-direction: column;
+                overflow-y: auto;
+                margin: 0;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+                padding: 0;
+                margin: 0;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+            }
+
+            .nav-links:last-child {
+                border-left: none;
+                padding-left: 0;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links a {
+                width: 100%;
+                padding: 0.8rem;
+                font-size: 1rem;
+                justify-content: flex-start;
+            }
+
+            /* 内容区域调整 */
+            .main-content {
+                margin-top: 60px;
+                padding: 1rem;
+            }
+
+            .welcome-message {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .welcome-message h1 {
+                font-size: 1.8rem;
+            }
+
+            .welcome-message p {
+                padding: 0.6rem 1rem;
+            }
+
+            .options-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            /* 确保内容不被菜单按钮遮挡 */
+            body {
+                padding-top: 50px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -284,6 +455,10 @@
                 <a href="/index_login">
                     <i class="nav-icon fas fa-home"></i>
                     Home
+                </a>
+                <a href="/inspiration">
+                    <i class="nav-icon fas fa-lightbulb"></i>
+                    Inspiration
                 </a>
                 <a href="/my_stories">
                     <i class="nav-icon fas fa-book"></i>
@@ -499,6 +674,34 @@
             // 如果是刷新页面，则清除数据
             if (e.currentTarget.performance.navigation.type === 1) {
                 sessionStorage.removeItem('storywriteData');
+            }
+        });
+        const navbar = document.getElementById('navbar');
+
+        function toggleMenu() {
+            navbar.classList.toggle('show');
+
+            // 切换背景滚动
+            if (navbar.classList.contains('show')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // 点击导航链接时关闭菜单
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // 点击菜单外部区域时关闭菜单
+        navbar.addEventListener('click', (e) => {
+            if (e.target === navbar) {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
             }
         });
     </script>

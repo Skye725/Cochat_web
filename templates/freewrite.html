@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Creative Writing Space</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -266,12 +266,42 @@
         }
 
         @media (max-width: 768px) {
-            .page-title {
-                font-size: 2rem;
+            .container {
+                padding: 0.5rem;
+                margin: 1rem auto;
             }
 
             .writing-container {
-                padding: 1.5rem;
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .page-subtitle {
+                font-size: 1rem;
+            }
+
+            #title {
+                padding: 0.75rem;
+                font-size: 1rem;
+            }
+
+            #content {
+                height: 300px;
+                padding: 0.75rem;
+                font-size: 1rem;
+            }
+
+            #save-button {
+                padding: 0.75rem 1.5rem;
+                width: 100%;
+            }
+
+            .status-message {
+                font-size: 0.9rem;
+                padding: 0.75rem;
             }
 
             .nav-content {
@@ -300,6 +330,22 @@
             justify-content: space-between;
             align-items: center;
         }
+
+        /* 键盘弹出时的调整 */
+        @media (max-height: 600px) {
+            #content {
+                height: 200px;
+            }
+        }
+
+        /* 优化触摸体验 */
+        @media (hover: none) {
+            input, textarea, button {
+                font-size: 16px !important;
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
+            }
+        }
     </style>
 </head>
 <body>
@@ -309,6 +355,10 @@
                 <a href="/index_login">
                     <i class="nav-icon fas fa-home"></i>
                     Home
+                </a>
+                <a href="/inspiration">
+                    <i class="nav-icon fas fa-lightbulb"></i>
+                    Inspiration
                 </a>
                 <a href="/my_stories">
                     <i class="nav-icon fas fa-book"></i>

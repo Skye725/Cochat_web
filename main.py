@@ -70,6 +70,7 @@ class User(db.Model):
     password = db.Column(db.String(128), nullable=False)
     gender = db.Column(db.String(10))
     birth_date = db.Column(db.Date)  # 将 age 改为 birth_date
+    participant_id = db.Column(db.String(10), default='0000')  # 添加新字段
     stories = db.relationship('Story', backref='user', lazy=True)
 
     def __repr__(self):
@@ -116,6 +117,7 @@ def signup():
         email = request.form.get('email')
         gender = request.form.get('gender')
         birth_date = request.form.get('birth_date')
+        participant_id = request.form.get('participant_id', '0000')  # 获取新字段，默认值为'0000'
         
         try:
             birth_date = datetime.strptime(birth_date, '%Y-%m-%d').date()
@@ -143,7 +145,8 @@ def signup():
             username=username, 
             email=email,
             gender=gender,
-            birth_date=birth_date
+            birth_date=birth_date,
+            participant_id=participant_id  # 添加新字段
         )
         new_user.set_password(password)
         db.session.add(new_user)
@@ -200,6 +203,7 @@ class Story(db.Model):
     content = db.Column(db.Text)  # 故事内容
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # 外键，指向 User
     writing_mode = db.Column(db.String(50), nullable=False)  # 'manual', 'dialogue', 'feedback'
+    story_status = db.Column(db.String(50), default='Visible to Researchers')  # 添加新字段
 
     def __repr__(self):
         return f'<Story {self.title}>'
@@ -211,7 +215,8 @@ class Story(db.Model):
             "title":self.title,
             "content": self.content,
             "user_id": self.user_id,
-            "writing_mode": self.writing_mode
+            "writing_mode": self.writing_mode,
+            "story_status": self.story_status
         }
 
 
@@ -365,7 +370,7 @@ def dify_chatbot_request(prompt):
     dify_api_url = "https://api.dify.ai/v1/chat-messages"
     
     headers = {
-        "Authorization": "Bearer xxxxxxxxxxx",
+        "Authorization": "Bearer xxxxxxxx",
         "Content-Type": "application/json"
     }
     user = User.query.get(current_user.id)
@@ -456,7 +461,7 @@ def story_write():
 
             # 调用 Dify API 获取反馈
             headers = {
-                "Authorization": "Bearer xxxxx",
+                "Authorization": "Bearer xxxxxxxx",
                 "Content-Type": "application/json"
             }
             
@@ -541,11 +546,10 @@ def get_story(story_id):
 @login_required
 def update_story(story_id):
     story = Story.query.get_or_404(story_id)
-    # if story.user_id != current_user.id:
-    #     abort(403)
     
     data = request.get_json()
-    story.content = data.get('content')
+    story.content = data.get('content', story.content)
+    story.story_status = data.get('story_status', story.story_status)
     db.session.commit()
     return jsonify({'success': True})
 
@@ -560,22 +564,51 @@ def delete_story(story_id):
     db.session.commit()
     return jsonify({'success': True})
 
+def update_existing_users():
+    with app.app_context():
+        # 首先添加新列
+        try:
+            db.session.execute(text('ALTER TABLE user ADD COLUMN participant_id VARCHAR(10) DEFAULT "0000"'))
+            db.session.commit()
+        except Exception as e:
+            print(f"Column might already exist: {e}")
+            db.session.rollback()
+        
+        # 更新所有现有用户的 participant_id
+        try:
+            db.session.execute(text('UPDATE user SET participant_id = "0000" WHERE participant_id IS NULL'))
+            db.session.commit()
+        except Exception as e:
+            print(f"Error updating existing users: {e}")
+            db.session.rollback()
 
+# 添加数据库迁移函数
+def update_existing_stories():
+    with app.app_context():
+        try:
+            db.session.execute(text('ALTER TABLE story ADD COLUMN story_status VARCHAR(50) DEFAULT "Visible to Researchers"'))
+            db.session.commit()
+        except Exception as e:
+            print(f"Column might already exist: {e}")
+            db.session.rollback()
+        
+        try:
+            db.session.execute(text('UPDATE story SET story_status = "Visible to Researchers" WHERE story_status IS NULL'))
+            db.session.commit()
+        except Exception as e:
+            print(f"Error updating existing stories: {e}")
+            db.session.rollback()
 
-
-
-
-
-
-
+@app.route('/inspiration')
+@login_required
+def inspiration():
+    return render_template('inspiration.html')
 
 if __name__ == '__main__':
-    # print('2')
     with app.app_context():
-        print("none")
         db.create_all()
-        print('done')
-    # print('3')
+        update_existing_users()
+        update_existing_stories()
     app.run(port=5000, debug=True)
 else:
     application = app
