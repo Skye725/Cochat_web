@@ -1,4 +1,4 @@
-A web platform for supporting users to tell their personal stories.    
+A web platform for supporting users to tell their personal stories for mental health.
 integrated Dify chatbots  development platform [click here](https://dify.ai/), including registration and login features.  
 new features： inspiration story sharing    
 Run with python3.9        
