@@ -229,7 +229,7 @@
             }
 
             /* 消息气泡调整 */
-            .max-w-[80%] {
+            .message-container .max-w-\[80\%\] {
                 max-width: 90% !important;
             }
 
@@ -284,7 +284,7 @@
         /* 超小屏幕设备适配 */
         @media (max-width: 480px) {
             .nav-links a {
-                width: 100%; /* 每行一个按钮 */
+                width: 100%;
                 margin-bottom: 0.2rem;
             }
 
@@ -467,7 +467,7 @@
                     <i class="nav-icon fas fa-book"></i>
                     My Stories
                 </a>
-                <a href="/daily_log" class="writing-link">
+                <a href="/daily_log" class="writing-link active">
                     <i class="nav-icon fas fa-calendar-day"></i>
                     Daily Log
                 </a>
@@ -475,7 +475,7 @@
                     <i class="nav-icon fas fa-pen"></i>
                     Manual Writing
                 </a>
-                <a href="/storygenerate" class="writing-link active">
+                <a href="/storygenerate" class="writing-link">
                     <i class="nav-icon fas fa-robot"></i>
                     Dialogue Based Writing
                 </a>
@@ -509,7 +509,7 @@
                 <div class="ml-3">
                     <p class="text-sm text-yellow-700">
                         <strong class="font-medium">Note：</strong>
-                        Do not leave the page while you are writing, as this may cause the chat history to be lost. If you want to save your story, please generate the story and click Save before leaving.。
+                        Do not leave the page while you are writing, as this may cause the chat history to be lost. If you want to save your story, please end the conversation and click Save before leaving.
                     </p>
                 </div>
             </div>
@@ -519,11 +519,11 @@
             <!-- Header -->
             <div class="p-4 border-b flex items-center space-x-4">
                 <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden">
-                    <img src="{{ url_for('static', filename='icon.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                    <img src="{{ url_for('static', filename='everyday.png') }}" alt="AI Assistant" class="w-full h-full object-cover">
                 </div>
                 <div>
-                    <h2 class="text-xl font-bold">Story Assistant</h2>
-                    <p class="text-sm text-gray-500">Always here to help, tell me about what you want to write and I will generate stories for you</p>
+                    <h2 class="text-xl font-bold">Daily Log Assistant</h2>
+                    <p class="text-sm text-gray-500">Let's record your daily thoughts and experiences together</p>
                 </div>
             </div>
 
@@ -533,11 +533,35 @@
                     <!-- AI Welcome Message -->
                     <div class="flex items-start space-x-4">
                         <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 overflow-hidden">
-                            <img src="{{ url_for('static', filename='icon.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                            <img src="{{ url_for('static', filename='everyday.png') }}" alt="AI Assistant" class="w-full h-full object-cover">
                         </div>
                         <div class="bg-gray-100 rounded-lg p-4 max-w-[80%]">
-                            <p>Hello, {{username}}! I am here to listen to your story. Here, we will have a relaxed conversation and collect your basic information. I will ask you one question at a time until I have all the information I want to know. Afterwards, I will encourage you to share your story and help you revise it to make it more authentic and encouraging. Please feel free to relax and start our communication! What story you would like to share today?</p>
+                            <p>Hello, {{username}}!😊 How are you feeling today? If you'd like, you can choose one of the options below or just tell me about your mood. No matter what you feel, I'm here to listen. Feel free to share with me—let's talk!</p>
                         </div>
+                    </div>
+
+                    <!-- Mood Selection Buttons -->
+                    <div class="flex flex-wrap justify-center gap-2 mt-4 px-4">
+                        <button onclick="sendMessage('I am feeling happy and full of energy today!')" 
+                                class="mood-btn bg-white hover:bg-blue-50 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 hover:scale-105 text-sm">
+                            🌞 Happy & full of energy
+                        </button>
+                        <button onclick="sendMessage('I am feeling okay and calm today.')" 
+                                class="mood-btn bg-white hover:bg-blue-50 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 hover:scale-105 text-sm">
+                            😌 Feeling okay and calm
+                        </button>
+                        <button onclick="sendMessage('I am feeling a bit tired or stressed today.')" 
+                                class="mood-btn bg-white hover:bg-blue-50 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 hover:scale-105 text-sm">
+                            😕 A bit tired or stressed
+                        </button>
+                        <button onclick="sendMessage('I am feeling a little sad or down today.')" 
+                                class="mood-btn bg-white hover:bg-blue-50 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 hover:scale-105 text-sm">
+                            😢 Feeling a little sad or down
+                        </button>
+                        <button onclick="sendMessage('I am not sure how I feel, just want to chat.')" 
+                                class="mood-btn bg-white hover:bg-blue-50 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 hover:scale-105 text-sm">
+                            😶 Not sure, just want to chat
+                        </button>
                     </div>
                 </div>
             </div>
@@ -564,18 +588,18 @@
             </div>
 
             <div class="guide-step">
-                <div class="guide-step-title">2. Generate Story</div>
-                <p>Click "Generate" when you're ready to finish the conversation.</p>
+                <div class="guide-step-title">2. Generate Log</div>
+                <p>Click "End Coversation" when you're ready to finish the conversation.</p>
             </div>
 
             <div class="guide-step">
-                <div class="guide-step-title">3. Edit Story</div>
-                <p>Click "Edit" to modify the generated story.</p>
+                <div class="guide-step-title">3. Edit Log</div>
+                <p>Click "Edit" to modify the generated Log.</p>
             </div>
 
             <div class="guide-step">
-                <div class="guide-step-title">4. Save Story</div>
-                <p>Once satisfied, click "Save" to store your story.</p>
+                <div class="guide-step-title">4. Save Log</div>
+                <p>Once satisfied, click "Save" to store your Log.</p>
             </div>
 
             <div class="guide-footer">
@@ -596,12 +620,12 @@
             messageDiv.className = 'flex items-start space-x-4 ' + (isUser ? 'justify-end' : '');
 
             // 检查是否包含特定文本
-            const isStory = !isUser && content.includes("I summarized the previous chat between us and generated a story");
+            const isStory = !isUser && content.includes("Today's log generated:");
 
             const iconAndMessage = `
                 ${isUser ? '' : `
                     <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 overflow-hidden">
-                        <img src="{{ url_for('static', filename='icon.jpg') }}" alt="AI Assistant" class="w-full h-full object-cover">
+                        <img src="{{ url_for('static', filename='everyday.png') }}" alt="AI Assistant" class="w-full h-full object-cover">
                     </div>
                 `}
                 <div class="${isUser ? 'bg-blue-500 text-white' : 'bg-gray-100'} rounded-lg p-4 max-w-[80%]">
@@ -622,7 +646,7 @@
                     ${!isUser && !isStory ? `
                         <div class="mt-2 flex justify-end">
                             <button onclick="startGenerating()" class="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors">
-                                Generate
+                                End Conversation
                             </button>
                         </div>
                     ` : ''}
@@ -652,6 +676,19 @@
             return indicatorDiv;
         }
 
+        // 添加 sendMessage 函数
+        function sendMessage(message) {
+            // 设置输入框的值
+            userInput.value = message;
+            
+            // 创建并触发提交事件
+            const submitEvent = new Event('submit', {
+                'bubbles': true,
+                'cancelable': true
+            });
+            chatForm.dispatchEvent(submitEvent);
+        }
+
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const message = userInput.value.trim();
@@ -666,7 +703,7 @@
 
             try {
                 // 发送消息到后端
-                const response = await fetch('/chat', {
+                const response = await fetch('/daily_log_chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -684,7 +721,6 @@
                 typingIndicator.remove();
 
                 // 添加 AI 回复
-                // 从返回的数据中提取回复文本
                 const aiResponse = data.fulfillment_response.messages[0].text.text[0];
                 addMessage(aiResponse);
 
@@ -697,7 +733,7 @@
 
         // 添加开始生成故事的函数
         async function startGenerating() {
-            const message = "Start generating the story";
+            const message = "End the conversation and generate my Log.";
 
             // 添加用户消息
             addMessage(message, true);
@@ -707,7 +743,7 @@
 
             try {
                 // 发送消息到后端
-                const response = await fetch('/chat', {
+                const response = await fetch('/daily_log_chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -749,7 +785,7 @@
 
                 // 检查并处理文本内容
                 let content = textarea.value;
-                const prefix = "I summarized the previous chat between us and generated a story:";
+                const prefix = "Today's log generated:";
                 if (content.includes(prefix)) {
                     // 删除前缀文本并去除多余空格
                     content = content.substring(content.indexOf(prefix) + prefix.length).trim();
@@ -783,7 +819,7 @@
                     body: JSON.stringify({
                         title: title,
                         content: content,
-                        writing_mode: 'dialogue'
+                        writing_mode: 'daily_log'
                     })
                 });
 

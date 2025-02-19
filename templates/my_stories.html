@@ -174,6 +174,10 @@
             border-left-color: #FF9800;  /* 橙色代表反馈式写作 */
         }
 
+        .story-card.daily_log {
+            border-left-color: #9C27B0;  /* 紫色代表日志写作 */
+        }
+
         .story-card.status-private {
             background: linear-gradient(135deg, #fff 0%, #E6E6FA 100%);
         }
@@ -209,6 +213,10 @@
             background-color: #FF9800;
         }
 
+        .writing-mode-badge.daily_log {
+            background-color: #9C27B0;
+        }
+
         .writing-mode-legend {
             display: flex;
             gap: 1.5rem;
@@ -240,6 +248,10 @@
 
         .legend-color.feedback {
             background-color: #FF9800;
+        }
+
+        .legend-color.daily_log {
+            background-color: #9C27B0;
         }
 
         .story-title {
@@ -416,13 +428,17 @@
                     <i class="nav-icon fas fa-home"></i>
                     Home
                 </a>
-                <a href="/inspiration">
+                <!-- <a href="/inspiration">
                     <i class="nav-icon fas fa-lightbulb"></i>
                     Inspiration
-                </a>
+                </a> -->
                 <a href="/my_stories" class="active">
                     <i class="nav-icon fas fa-book"></i>
                     My Stories
+                </a>
+                <a href="/daily_log" class="writing-link">
+                    <i class="nav-icon fas fa-calendar-day"></i>
+                    Daily Log
                 </a>
                 <a href="/freewrite" class="writing-link">
                     <i class="nav-icon fas fa-pen"></i>
@@ -454,6 +470,10 @@
         <h1 class="page-title">My Stories</h1>
         <div class="writing-mode-legend">
             <div class="legend-item">
+                <div class="legend-color daily_log"></div>
+                <span>Daily Log</span>
+            </div>
+            <div class="legend-item">
                 <div class="legend-color manual"></div>
                 <span>Manual Writing</span>
             </div>
@@ -478,7 +498,10 @@
                 .then(data => {
                     const container = document.getElementById('stories-container');
                     if (data.stories && data.stories.length > 0) {
-                        container.innerHTML = data.stories.map(story => `
+                        // 对故事数组按照 id 从大到小排序
+                        const sortedStories = data.stories.sort((a, b) => b.id - a.id);
+                        
+                        container.innerHTML = sortedStories.map(story => `
                             <div class="story-card ${story.writing_mode} ${getStatusClass(story.story_status)}" onclick="window.location.href='/story/${story.id}'">
                                 ${getStatusIndicator(story.story_status)}
                                 <div class="writing-mode-badge ${story.writing_mode}">
@@ -504,7 +527,8 @@
             const labels = {
                 'manual': 'Manual',
                 'dialogue': 'Dialogue',
-                'feedback': 'Feedback'
+                'feedback': 'Feedback',
+                'daily_log': 'Daily Log'
             };
             return labels[mode] || mode;
         }

@@ -308,13 +308,13 @@ def save_story():
         data = request.get_json()
         title = data.get('title')
         content = data.get('content')
-        writing_mode = data.get('writing_mode')  # 从请求中获取写作模式
+        writing_mode = data.get('writing_mode')
         
         if not all([title, content, writing_mode]):
             return jsonify({'error': 'Title, content and writing mode cannot be empty'}), 400
         
         # 验证写作模式是否有效
-        valid_modes = ['manual', 'dialogue', 'feedback']
+        valid_modes = ['manual', 'dialogue', 'feedback', 'daily_log']  # 添加 'daily_log'
         if writing_mode not in valid_modes:
             return jsonify({'error': 'Invalid writing mode'}), 400
         
@@ -603,6 +603,74 @@ def update_existing_stories():
 @login_required
 def inspiration():
     return render_template('inspiration.html')
+
+def daily_log_chatbot_request(prompt):
+    dify_api_url = "https://api.dify.ai/v1/chat-messages"
+    
+    headers = {
+        "Authorization": "Bearer xxxxxxxxxxxxxxxxx",  # 使用新的 API key
+        "Content-Type": "application/json"
+    }
+    user = User.query.get(current_user.id)
+    
+    # 获取当前用户的 conversation_id
+    current_conversation_id = user_conversations.get(f"daily_log_{user.id}", "")
+
+    data = {
+        "inputs": {
+            "username": user.username,
+            "gender": str(user.gender),
+            "age": str(calculate_age(user.birth_date))
+        },
+        "query": prompt,
+        "response_mode": "blocking",
+        "conversation_id": current_conversation_id,
+        "user": str(user.id)
+    }
+    
+    response = requests.post(dify_api_url, headers=headers, data=json.dumps(data))
+    response_json = response.json()
+    
+    # 如果是新对话，保存 conversation_id
+    if not current_conversation_id and 'conversation_id' in response_json:
+        user_conversations[f"daily_log_{user.id}"] = response_json['conversation_id']
+    
+    return response_json
+
+@app.route('/daily_log')
+@login_required
+def daily_log():
+    user = User.query.get(current_user.id)
+    age = calculate_age(user.birth_date) if user.birth_date else None
+    return render_template('daily_log.html', username=user.username, gender=user.gender, age=age)
+
+@app.route('/daily_log_chat', methods=['POST'])
+@login_required
+def daily_log_chat():
+    try:
+        message = request.json.get('message')
+        if not message:
+            return jsonify({'error': 'Message is required'}), 400
+
+        # 调用 Dify API
+        dify_response = daily_log_chatbot_request(message)
+        response_text = dify_response.get('answer', 'Sorry, I cannot answer this question now.')
+        
+        response = {
+            "fulfillment_response": {
+                "messages": [{"text": {"text": [response_text]}}]
+            }
+        }
+
+        return jsonify(response)
+
+    except Exception as e:
+        app.logger.error(f"Daily log chat error: {str(e)}")
+        return jsonify({
+            "fulfillment_response": {
+                "messages": [{"text": {"text": ["Sorry, something went wrong"]}}]
+            }
+        }), 500
 
 if __name__ == '__main__':
     with app.app_context():

@@ -231,7 +231,7 @@
 
         .options-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 2rem;
             margin-top: 2rem;
         }
@@ -423,13 +423,17 @@
                     <i class="nav-icon fas fa-home"></i>
                     Home
                 </a>
-                <a href="/inspiration">
+                <!-- <a href="/inspiration">
                     <i class="nav-icon fas fa-lightbulb"></i>
                     Inspiration
-                </a>
+                </a> -->
                 <a href="/my_stories">
                     <i class="nav-icon fas fa-book"></i>
                     My Stories
+                </a>
+                <a href="/daily_log" class="writing-link">
+                    <i class="nav-icon fas fa-calendar-day"></i>
+                    Daily Log
                 </a>
                 <a href="/freewrite" class="writing-link">
                     <i class="nav-icon fas fa-pen"></i>
@@ -471,6 +475,11 @@
             <div class="writing-options">
                 <h2>You are free to choose any writing style to begin crafting your story!</h2>
                 <div class="options-container">
+                    <a href="/daily_log" class="option-card">
+                        <div class="option-icon">📅</div>
+                        <h3 class="option-title">Daily Log</h3>
+                        <p class="option-description">Record and reflect on your daily experiences</p>
+                    </a>
                     <a href="/freewrite" class="option-card">
                         <div class="option-icon">✍️</div>
                         <h3 class="option-title">Manual Writing</h3>
