@@ -672,6 +672,26 @@ def daily_log_chat():
             }
         }), 500
 
+@app.route('/shared_stories')
+def shared_stories():
+    # 获取所有状态为 'Anonymous Sharing' 或 'Public Sharing' 的故事
+    shared_stories = Story.query.filter(
+        Story.story_status.in_(['Anonymous Sharing', 'Public Sharing'])
+    ).order_by(Story.time.desc()).all()
+    
+    stories_data = []
+    for story in shared_stories:
+        author = User.query.get(story.user_id)
+        story_dict = story.to_dict()
+        # 如果是匿名分享，则不显示作者信息
+        if story.story_status == 'Anonymous Sharing':
+            story_dict['author'] = 'Anonymous'
+        else:
+            story_dict['author'] = author.username
+        stories_data.append(story_dict)
+    
+    return render_template('shared_stories.html', stories=stories_data)
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

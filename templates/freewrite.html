@@ -380,6 +380,10 @@
                     <i class="nav-icon fas fa-compass"></i>
                     Feedback Based Writing
                 </a>
+                <a href="/shared_stories" >
+                    <i class="nav-icon fas fa-book-open"></i>
+                    Story Space
+                </a>
             </div>
             <div class="nav-links">
                 <a href="/profile">
@@ -465,12 +469,12 @@
             const content = document.getElementById('content').value;
 
             if (!title || !content) {
-                showMessage('Please enter both title and content', false);
+                alert('Please enter both title and content');
                 return;
             }
 
             if (title.length > 200) {
-                showMessage('Title must be less than 200 characters', false);
+                alert('Title must be less than 200 characters');
                 return;
             }
 
@@ -490,17 +494,20 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    showMessage('Your story has been saved successfully!', true);
+                    alert('Story saved successfully!');
                     // 清除 sessionStorage 中的数据
                     sessionStorage.removeItem('freewriteData');
                     // 清空输入框
                     document.getElementById('title').value = '';
                     document.getElementById('content').value = '';
+                    // 更新当前时间显示
+                    updateTime();
                 } else {
-                    showMessage(data.error || 'Unable to save your story. Please try again.', false);
+                    throw new Error(data.error || 'Unable to save your story. Please try again.');
                 }
             } catch (error) {
-                showMessage('An error occurred. Please try again later.', false);
+                console.error('Error:', error);
+                alert('Failed to save story: ' + error.message);
             }
         });
 

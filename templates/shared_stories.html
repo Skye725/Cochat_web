@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story Space</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --nav-height: 70px;
+            --transition: all 0.3s ease;
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 复用 index_login.html 的导航栏样式 */
+        #navbar {
+            background-color: white;
+            padding: 0.7rem 1rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 1rem;
+            flex-wrap: nowrap;
+            gap: 2rem;
+        }
+
+        /* 导航链接样式保持与 index_login.html 一致 */
+        .nav-links {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+
+        .nav-links:first-child {
+            margin-right: 0;
+            padding-right: 0;
+        }
+
+        .nav-links:last-child {
+            margin-left: 0;
+            padding-left: 2rem;
+            border-left: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 1.1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+
+        .nav-links a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+
+        .nav-links .writing-link {
+            background-color: rgba(74, 144, 226, 0.1);
+            border: 1px solid rgba(74, 144, 226, 0.2);
+        }
+
+        .nav-links .writing-link:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
+        }
+
+        /* 移动端菜单按钮样式 */
+        .menu-button {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1001;
+            cursor: pointer;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .menu-button i {
+            margin-right: 8px;
+        }
+
+        /* 移动端样式 */
+        @media (max-width: 768px) {
+            .menu-button {
+                display: flex;
+                align-items: center;
+            }
+
+            #navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.9);
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                padding: 0;
+            }
+
+            #navbar.show {
+                transform: translateX(0);
+            }
+
+            .nav-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 80%;
+                height: 100%;
+                background-color: white;
+                padding: 4rem 1rem 1rem;
+                flex-direction: column;
+                overflow-y: auto;
+                margin: 0;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+                padding: 0;
+                margin: 0;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+            }
+
+            .nav-links:last-child {
+                border-left: none;
+                padding-left: 0;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links a {
+                width: 100%;
+                padding: 0.8rem;
+                font-size: 1rem;
+                justify-content: flex-start;
+            }
+
+            body {
+                padding-top: 50px;
+            }
+        }
+
+        /* 故事卡片样式 */
+        .stories-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 匿名分享故事卡片样式 */
+        .story-card.anonymous {
+            background: white;
+            border-left: 1px solid #ddd;
+        }
+
+        .story-card.anonymous:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 公开分享故事卡片样式 */
+        .story-card.public {
+            background: white;
+            border-left: 1px solid #ddd;
+        }
+
+        .story-card.public:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 更新分享类型标签样式 */
+        .story-type {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .story-type.anonymous {
+            background-color: #ffb3c1;
+            color: #800020;
+        }
+
+        .story-type.public {
+            background-color: #ff3333;
+            color: white;
+        }
+
+        .story-content {
+            padding: 1.5rem;
+        }
+
+        .story-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .story-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .story-preview {
+            color: #555;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.5;
+        }
+
+        /* 故事详情模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: var(--transition);
+        }
+
+        .close-button:hover {
+            color: var(--primary-color);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .stories-container {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1rem;
+            }
+        }
+
+        .page-title {
+            text-align: center;
+            color: var(--secondary-color);
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        .page-description {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-button" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+        MENU
+    </button>
+
+    <!-- 复用 index_login.html 的导航栏 -->
+    <nav id="navbar">
+        <div class="nav-content">
+            <div class="nav-links">
+                <a href="/index_login">
+                    <i class="nav-icon fas fa-home"></i>
+                    Home
+                </a>
+                <a href="/my_stories">
+                    <i class="nav-icon fas fa-book"></i>
+                    My Stories
+                </a>
+                <a href="/daily_log" class="writing-link">
+                    <i class="nav-icon fas fa-calendar-day"></i>
+                    Daily Log
+                </a>
+                <a href="/freewrite" class="writing-link">
+                    <i class="nav-icon fas fa-pen"></i>
+                    Manual Writing
+                </a>
+                <a href="/storygenerate" class="writing-link">
+                    <i class="nav-icon fas fa-robot"></i>
+                    Dialogue Based Writing
+                </a>
+                <a href="/storywrite" class="writing-link">
+                    <i class="nav-icon fas fa-compass"></i>
+                    Feedback Based Writing
+                </a>
+                <a href="/shared_stories" class="active">
+                    <i class="nav-icon fas fa-book-open"></i>
+                    Story Space
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/profile">
+                    <i class="nav-icon fas fa-user"></i>
+                    Profile
+                </a>
+                <a href="/logout">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    Sign Out
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <h1 class="page-title">Shared Stories</h1>
+    <p class="page-description">
+        Welcome to our Story Space! Here you can explore stories shared by our community members. 
+        Each story represents a unique voice and experience.
+    </p>
+
+    <div class="stories-container">
+        {% if stories %}
+            {% for story in stories %}
+            <div class="story-card {{ 'anonymous' if story.story_status == 'Anonymous Sharing' else 'public' }}" 
+                 onclick="showStoryDetail('{{ story.title }}', '{{ story.author }}', '{{ story.time }}', `{{ story.content }}`)">
+                <div class="story-content">
+                    <div class="story-title">{{ story.title }}</div>
+                    <div class="story-meta">
+                        <span><i class="fas fa-user"></i> {{ story.author }}</span>
+                        <span><i class="fas fa-clock"></i> {{ story.time }}</span>
+                    </div>
+                    <div class="story-preview">{{ story.content }}</div>
+                    <div class="story-type {{ 'anonymous' if story.story_status == 'Anonymous Sharing' else 'public' }}">
+                        {{ 'Anonymous' if story.story_status == 'Anonymous Sharing' else 'Public' }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-stories">
+                <p>no stories shared yet</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- 故事详情模态框 -->
+    <div id="storyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle" class="story-title"></h2>
+            <div id="modalMeta" class="story-meta"></div>
+            <div id="modalContent" style="white-space: pre-wrap;"></div>
+        </div>
+    </div>
+
+    <script>
+        function showStoryDetail(title, author, time, content) {
+            const modal = document.getElementById('storyModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMeta = document.getElementById('modalMeta');
+            const modalContent = document.getElementById('modalContent');
+
+            modalTitle.textContent = title;
+            modalMeta.innerHTML = `
+                <span><i class="fas fa-user"></i> ${author}</span>
+                <span><i class="fas fa-clock"></i> ${time}</span>
+            `;
+            modalContent.textContent = content;
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('storyModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('storyModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        const navbar = document.getElementById('navbar');
+
+        function toggleMenu() {
+            navbar.classList.toggle('show');
+
+            if (navbar.classList.contains('show')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
+            });
+        });
+
+        navbar.addEventListener('click', (e) => {
+            if (e.target === navbar) {
+                navbar.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+</body>
+</html> 
