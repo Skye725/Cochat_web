@@ -14,7 +14,6 @@ pip install -r requirements2.txt
 
 **Features to be added:**  
 - Interface enhancement
-- story sharing
 - text to voice
 
   You can try using the following link:
